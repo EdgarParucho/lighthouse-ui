@@ -1,29 +1,37 @@
 import { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
+import { Get } from '../services/'
 import LogoutButton from '../components/LogoutButton'
-import getData from '../services/apiRequests'
+import Skeleton from '../components/Skeleton'
 
 function DashboardView() {
-  const [data, setData] = useState(null)
-  const { getAccessTokenSilently } = useAuth0()
+  const { getAccessTokenSilently, isAuthenticated } = useAuth0()
+  const [account, setAccount] = useState(null)
+  const [habits, setHabits] = useState(null)
+  const [records, setRecords] = useState(null)
+  const [isFetching, setIsFetching] = useState(false)
+  const [errorFetching, setErrorFetching] = useState(false)
 
   useEffect(() => {
+    setIsFetching(true)
     const fetchData = async () => {
       try {
         const accessToken = await getAccessTokenSilently()
-        const userData = await getData(accessToken)
-        setData(userData)
+        const response = await Get(accessToken)
+        setIsFetching(false)
       } catch (error) {
-        console.error('Error fetching data', error)
+        alert('Error fetching data')
+        setErrorFetching(true)
+        setIsFetching(false)
       }
     }
     fetchData()
 }, [])
 
-  return (
+  if (errorFetching) return <p>Sorry, something went wrong getting the data.</p>
+  else return isFetching ? <Skeleton /> : (
     <>
     <h1>Dashboard</h1>
-    <div>{data ? JSON.stringify(data) : 'Loading...'}</div>
     <LogoutButton />
     </>
   )

@@ -1,0 +1,23 @@
+.skeleton {
+  height: 2.8rem;
+  width: 20vw;
+  margin: 0 auto;
+  background-color: grey;
+  opacity: .1;
+  animation-name: pulse;
+  animation-duration: .9s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: .1;
+  }
+  50% {
+    opacity: .5;
+  }
+  100% {
+    opacity: .1;
+  }
+}
