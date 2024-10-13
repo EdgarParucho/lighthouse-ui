@@ -5,6 +5,13 @@ import { CreateHabit } from '../services'
 import LogoutButton from '../components/LogoutButton'
 import Skeleton from '../components/Skeleton'
 
+const Habit = ({habitName}) => <>
+<div>
+  <p>{habitName}</p>
+  <button type='button' disabled>...</button>
+</div>
+</>
+
 function DashboardView() {
   const { getAccessTokenSilently } = useAuth0()
   const [habits, setHabits] = useState([])
@@ -46,14 +53,12 @@ function DashboardView() {
     <button type='button' onClick={() => fetchData()}>Get data</button>
     </>
   )
-  else return isFetching ? <Skeleton /> : (
-    <>
-    <h1>Dashboard</h1>
-    <pre>Records: {JSON.stringify(records)}</pre>
-    <pre>Habits: {JSON.stringify(habits)}</pre>
-    <LogoutButton />
-    </>
-  )
+  else if (isFetching) return <Skeleton />
+  else return <>
+  <h1>Dashboard</h1>
+  { habits.map(habit => <Habit habitName={habit.name} key={habit.id} />) }
+  <LogoutButton />
+  </>
 }
 
 export default DashboardView
