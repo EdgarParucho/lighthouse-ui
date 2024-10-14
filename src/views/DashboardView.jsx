@@ -12,35 +12,66 @@ const Habit = ({habitName}) => <>
 </div>
 </>
 
+const HabitForm = ({ habits, setHabits }) => {
+  const { getAccessTokenSilently } = useAuth0()
+  const [formData, setFormData] = useState({ name: '', date: new Date() })
+  const [loading, setLoading] = useState(false)
+
+  function handleChange(e) {
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
+  }
+
+  async function createHabit(e) {
+    e.preventDefault()
+    setLoading(true)
+    const token = await getAccessTokenSilently()
+    const { error, data, message } = await CreateHabit({ token, payload: formData })
+    alert(message)
+    setLoading(false)
+    if (error) return
+    const newHabits = [...habits, data]
+    setHabits(newHabits)
+  }
+
+  return <>
+  <form onSubmit={createHabit}>
+    <label>
+      <input
+      type='text'
+      placeholder='Habit name'
+      maxLength={30}
+      required
+      name='name'
+      onChange={handleChange}
+      />
+    </label>
+    <label>
+      <input type="date" name='date' onChange={handleChange} />
+    </label>
+    <button type="button" disabled={loading}>Cancel</button>
+    <button type="submit" disabled={loading}>Confirm</button>
+  </form>
+  </>
+}
+
 function DashboardView() {
   const { getAccessTokenSilently } = useAuth0()
   const [habits, setHabits] = useState([])
   const [records, setRecords] = useState([])
-  const [isFetching, setIsFetching] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [errorFetching, setErrorFetching] = useState(false)
 
   async function fetchData() {
-    setIsFetching(true)
+    setLoading(true)
     const token = await getAccessTokenSilently()
     const { error, data, message } = await GetAll(token)
     alert(message)
-    setIsFetching(false)
+    setLoading(false)
     if (error) return setErrorFetching(true)
     else if (errorFetching) setErrorFetching(false)
     setHabits(data.habits)
     setRecords(data.records)
-  }
-
-  async function createHabit(payload) {
-    setIsFetching(true)
-    const token = await getAccessTokenSilently()
-    const { error, data, message } = await CreateHabit({ token, payload })
-    alert(message)
-    setIsFetching(false)
-    if (error) return
-    const newHabits = [...habits]
-    newHabits.push({ ...data })
-    setHabits(newHabits)
   }
 
   useEffect(() => {
@@ -53,9 +84,10 @@ function DashboardView() {
     <button type='button' onClick={() => fetchData()}>Get data</button>
     </>
   )
-  else if (isFetching) return <Skeleton />
+  else if (loading) return <Skeleton />
   else return <>
   <h1>Dashboard</h1>
+  <HabitForm habits={habits} setHabits={setHabits} />
   { habits.map(habit => <Habit habitName={habit.name} key={habit.id} />) }
   <LogoutButton />
   </>
