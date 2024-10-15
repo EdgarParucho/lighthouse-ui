@@ -35,7 +35,7 @@ const HabitForm = ({ habits, selectedHabit = null, hideHabitForm, setHabits }) =
     setLoading(false)
     if (error) return
     const newHabits = [...habits]
-    if (data !== null) newHabits.push({ ...data })
+    if (selectedHabit == null) newHabits.push({ ...data })
     else {
       const updatedIndex = newHabits.findIndex(habit => habit.id == selectedHabit.id)
       newHabits[updatedIndex] = { ...newHabits[updatedIndex], ...formData }

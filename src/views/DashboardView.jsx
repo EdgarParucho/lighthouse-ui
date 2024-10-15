@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { GetAll } from '../services/'
+import { DeleteHabit, GetAll } from '../services/'
 import LogoutButton from '../components/LogoutButton'
 import Skeleton from '../components/Skeleton'
 import HabitForm from '../components/HabitForm'
 
-const Habit = ({ habit, startUpdatingHabit }) => {
+const Habit = ({ habit, showHabitForm, askDeleteConfirmation }) => {
 return <>
 <div>
   <p>{habit.name}</p>
-  <button type='button' onClick={startUpdatingHabit}>Update</button>
+  <button type='button' onClick={showHabitForm}>Update</button>
+  <button type='button' onClick={askDeleteConfirmation}>Delete</button>
 </div>
 </>}
 
@@ -22,14 +23,31 @@ function DashboardView() {
   const [showingHabitForm, setShowingHabitForm] = useState(false)
   const [errorFetching, setErrorFetching] = useState(false)
 
-  const showHabitForm = () => setShowingHabitForm(true)
+  const showHabitForm = (habit = null) => {
+    if (habit != null) setSelectedHabit({ ...habit })
+    setShowingHabitForm(true)
+    
+  }
   const hideHabitForm = () => {
     setSelectedHabit(null)
     setShowingHabitForm(false)
   }
-  const startUpdatingHabit = (habit) => {
-    setSelectedHabit({ ...habit })
-    showHabitForm()
+
+  const askDeleteConfirmation = async ({ id }) => {
+    const deletionConfirmed = confirm('You are about to delete this habit and its records.\nThis action is irreversible, please confirm to proceed.')
+    if (!deletionConfirmed) return
+    setLoading(true)
+    const token = await getAccessTokenSilently()
+    const { error, message } = await DeleteHabit({ token, habitID: id })
+    alert(message)
+    setLoading(false)
+    if (error) return setErrorFetching(true)
+    else if (errorFetching) setErrorFetching(false)
+    const newHabits = [...habits]
+    const deletedIndex = newHabits.findIndex(habit => habit.id == id)
+    newHabits.splice(deletedIndex, 1)
+    setHabits(newHabits)
+
   }
 
   async function fetchData() {
@@ -57,7 +75,7 @@ function DashboardView() {
   else if (loading) return <Skeleton />
   else return <>
   <h1>Dashboard</h1>
-  <button type="button" onClick={showHabitForm}>Add Habit</button>
+  <button type="button" onClick={() => showHabitForm()}>Add Habit</button>
   { showingHabitForm &&
     <HabitForm
     habits={habits}
@@ -69,7 +87,8 @@ function DashboardView() {
   { habits.map(habit => <Habit
     habit={habit}
     key={habit.id}
-    startUpdatingHabit={() => startUpdatingHabit(habit)} />
+    showHabitForm={() => showHabitForm(habit)}
+    askDeleteConfirmation={() => askDeleteConfirmation(habit)}/>
   )}
   <LogoutButton />
   </>

@@ -40,11 +40,22 @@ export function UpdateHabit({ token, habitID, payload }) {
     .then(() => Object({
       error: false,
       message: 'Done: Habit updated',
-      data: null,
     }))
     .catch((error) => Object({
       error: true,
       message: errorMessage(error),
-      data: null,
+    }))
+}
+
+export function DeleteHabit({ token, habitID }) {
+  const headers = { Authorization: 'Bearer ' + token }
+  return axios.delete('/habit/' + habitID, { headers })
+    .then(() => Object({
+      error: false,
+      message: 'Done: Habit deleted',
+    }))
+    .catch((error) => Object({
+      error: true,
+      message: errorMessage(error),
     }))
 }
