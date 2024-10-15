@@ -20,11 +20,27 @@ export function GetAll(token) {
 }
 
 export function CreateHabit({ token, payload }) {
-  return axios.post('/habit', payload, { headers: { Authorization: 'Bearer ' + token } })
+  const headers = { Authorization: 'Bearer ' + token }
+  return axios.post('/habit', payload, { headers })
     .then(({ data }) => Object({
       error: false,
       message: 'Done: Habit created',
       data,
+    }))
+    .catch((error) => Object({
+      error: true,
+      message: errorMessage(error),
+      data: null,
+    }))
+}
+
+export function UpdateHabit({ token, habitID, payload }) {
+  const headers = { Authorization: 'Bearer ' + token }
+  return axios.put('/habit/' + habitID, payload, { headers })
+    .then(() => Object({
+      error: false,
+      message: 'Done: Habit updated',
+      data: null,
     }))
     .catch((error) => Object({
       error: true,
