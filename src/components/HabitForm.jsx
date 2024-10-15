@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { CreateHabit, UpdateHabit } from '../services'
+import { CreateHabit, UpdateHabit } from '../services/habitService'
 
 const HabitForm = ({ habits, selectedHabit = null, hideHabitForm, setHabits }) => {
   const { getAccessTokenSilently } = useAuth0()
@@ -45,7 +45,7 @@ const HabitForm = ({ habits, selectedHabit = null, hideHabitForm, setHabits }) =
   }
 
   return <>
-  <h3>Habit form</h3>
+  <h3>Habit Form</h3>
   <form onSubmit={handleSubmit}>
     <label>
       <input

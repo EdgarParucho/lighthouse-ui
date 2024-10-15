@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { DeleteHabit, GetAll } from '../services/'
+import { GetAll } from '../services/'
+import { DeleteHabit } from '../services/habitService'
 import LogoutButton from '../components/LogoutButton'
 import Skeleton from '../components/Skeleton'
 import HabitForm from '../components/HabitForm'
+import RecordForm from '../components/RecordForm'
 
 const Habit = ({ habit, showHabitForm, askDeleteConfirmation }) => {
 return <>
@@ -21,17 +23,20 @@ function DashboardView() {
   const [records, setRecords] = useState([])
   const [loading, setLoading] = useState(false)
   const [showingHabitForm, setShowingHabitForm] = useState(false)
+  const [showingRecordForm, setShowingRecordForm] = useState(false)
   const [errorFetching, setErrorFetching] = useState(false)
 
   const showHabitForm = (habit = null) => {
     if (habit != null) setSelectedHabit({ ...habit })
     setShowingHabitForm(true)
-    
   }
   const hideHabitForm = () => {
     setSelectedHabit(null)
     setShowingHabitForm(false)
   }
+
+  const showRecordForm = () => setShowingRecordForm(true)
+  const hideRecordForm = () => setShowingRecordForm(false)
 
   const askDeleteConfirmation = async ({ id }) => {
     const deletionConfirmed = confirm('You are about to delete this habit and its records.\nThis action is irreversible, please confirm to proceed.')
@@ -76,12 +81,21 @@ function DashboardView() {
   else return <>
   <h1>Dashboard</h1>
   <button type="button" onClick={() => showHabitForm()}>Add Habit</button>
+  <button type="button" onClick={() => showRecordForm()}>Add Record</button>
   { showingHabitForm &&
     <HabitForm
     habits={habits}
     selectedHabit={selectedHabit}
     setHabits={setHabits}
     hideHabitForm={hideHabitForm}
+    />
+  }
+  { showingRecordForm &&
+    <RecordForm
+    records={records}
+    habits={habits}
+    setRecords={setRecords}
+    hideRecordForm={hideRecordForm}
     />
   }
   { habits.map(habit => <Habit
