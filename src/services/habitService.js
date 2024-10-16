@@ -1,9 +1,9 @@
 import axios from '../api/axios'
 import { errorMessage } from './index'
 
-export function CreateHabit({ token, payload }) {
+export function CreateHabit({ token, values }) {
   const headers = { Authorization: 'Bearer ' + token }
-  return axios.post('/habit', payload, { headers })
+  return axios.post('/habit', values, { headers })
     .then(({ data }) => Object({
       error: false,
       message: 'Done: Habit created',
@@ -16,9 +16,9 @@ export function CreateHabit({ token, payload }) {
     }))
 }
 
-export function UpdateHabit({ token, habitID, payload }) {
+export function UpdateHabit({ token, habitID, values }) {
   const headers = { Authorization: 'Bearer ' + token }
-  return axios.put('/habit/' + habitID, payload, { headers })
+  return axios.put('/habit/' + habitID, values, { headers })
     .then(() => Object({
       error: false,
       message: 'Done: Habit updated',

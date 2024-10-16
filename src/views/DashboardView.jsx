@@ -6,13 +6,14 @@ import LogoutButton from '../components/LogoutButton'
 import Skeleton from '../components/Skeleton'
 import HabitForm from '../components/HabitForm'
 import RecordForm from '../components/RecordForm'
+import RecordCard from '../components/RecordCard'
 
-const Habit = ({ habit, showHabitForm, askDeleteConfirmation }) => {
+const Habit = ({ habit, showHabitForm, askConfirmationToDeleteHabit }) => {
 return <>
 <div>
   <p>{habit.name}</p>
   <button type='button' onClick={showHabitForm}>Update</button>
-  <button type='button' onClick={askDeleteConfirmation}>Delete</button>
+  <button type='button' onClick={askConfirmationToDeleteHabit}>Delete</button>
 </div>
 </>}
 
@@ -20,11 +21,13 @@ function DashboardView() {
   const { getAccessTokenSilently } = useAuth0()
   const [habits, setHabits] = useState([])
   const [selectedHabit, setSelectedHabit] = useState(null)
+  const [selectedRecord, setSelectedRecord] = useState(null)
   const [records, setRecords] = useState([])
   const [loading, setLoading] = useState(false)
   const [showingHabitForm, setShowingHabitForm] = useState(false)
   const [showingRecordForm, setShowingRecordForm] = useState(false)
   const [errorFetching, setErrorFetching] = useState(false)
+  const [habitNames, setHabitNames] = useState({})
 
   const showHabitForm = (habit = null) => {
     if (habit != null) setSelectedHabit({ ...habit })
@@ -35,10 +38,16 @@ function DashboardView() {
     setShowingHabitForm(false)
   }
 
-  const showRecordForm = () => setShowingRecordForm(true)
-  const hideRecordForm = () => setShowingRecordForm(false)
+  const showRecordForm = (record = null) => {
+    if (record != null) setSelectedRecord({ ...record })
+    setShowingRecordForm(true)
+  }
+  const hideRecordForm = () => {
+    setSelectedRecord(null)
+    setShowingRecordForm(false)
+  }
 
-  const askDeleteConfirmation = async ({ id }) => {
+  const askConfirmationToDeleteHabit = async ({ id }) => {
     const deletionConfirmed = confirm('You are about to delete this habit and its records.\nThis action is irreversible, please confirm to proceed.')
     if (!deletionConfirmed) return
     setLoading(true)
@@ -71,6 +80,13 @@ function DashboardView() {
     fetchData()
   }, [])
 
+  useEffect(() => {
+    const newHabitNames = habits.reduce(
+      (previous, { id, name }) => Object({ ...previous, [id]: name }), {}
+    )
+    setHabitNames(newHabitNames)
+  }, [habits])
+
   if (errorFetching) return (
     <>
     <p>Sorry, something went wrong getting the data.</p>
@@ -92,17 +108,27 @@ function DashboardView() {
   }
   { showingRecordForm &&
     <RecordForm
-    records={records}
     habits={habits}
+    records={records}
+    selectedRecord={selectedRecord}
     setRecords={setRecords}
     hideRecordForm={hideRecordForm}
     />
   }
+  <h2>Habits</h2>
   { habits.map(habit => <Habit
     habit={habit}
     key={habit.id}
     showHabitForm={() => showHabitForm(habit)}
-    askDeleteConfirmation={() => askDeleteConfirmation(habit)}/>
+    askConfirmationToDeleteHabit={() => askConfirmationToDeleteHabit(habit)}/>
+  )}
+  <h2>Records</h2>
+  { records.map(record => <RecordCard
+    record={record}
+    habitName={habitNames[record.habitID]}
+    key={record.id}
+    showRecordForm={() => showRecordForm(record)}
+    />
   )}
   <LogoutButton />
   </>

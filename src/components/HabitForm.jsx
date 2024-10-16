@@ -4,10 +4,8 @@ import { CreateHabit, UpdateHabit } from '../services/habitService'
 
 const HabitForm = ({ habits, selectedHabit = null, hideHabitForm, setHabits }) => {
   const { getAccessTokenSilently } = useAuth0()
-  const [formData, setFormData] = useState({
-    name: '',
-    createdAt: new Date()
-  })
+  const [formData, setFormData] = useState({ name: '', createdAt: new Date() })
+  const [loading, setLoading] = useState(false)
   
   useEffect(() => {
     if (selectedHabit != null) setFormData({
@@ -15,8 +13,6 @@ const HabitForm = ({ habits, selectedHabit = null, hideHabitForm, setHabits }) =
       createdAt: selectedHabit.createdAt,
     })
   }, [selectedHabit])
-  
-  const [loading, setLoading] = useState(false)
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -27,10 +23,10 @@ const HabitForm = ({ habits, selectedHabit = null, hideHabitForm, setHabits }) =
     e.preventDefault()
     setLoading(true)
     const token = await getAccessTokenSilently()
-    const payload = { ...formData }
-    const { error, data, message } =  (selectedHabit == null)
-      ? await CreateHabit({ token, payload })
-      : await UpdateHabit({ token, habitID: selectedHabit.id, payload })
+    const values = { ...formData }
+    const { error, data, message } = (selectedHabit == null)
+      ? await CreateHabit({ token, values })
+      : await UpdateHabit({ token, habitID: selectedHabit.id, values })
     alert(message)
     setLoading(false)
     if (error) return

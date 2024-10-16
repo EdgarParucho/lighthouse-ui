@@ -1,16 +1,21 @@
 import { useAuth0 } from '@auth0/auth0-react'
-import { useState } from 'react'
-import { CreateRecord } from '../services/recordService'
+import { useEffect, useState } from 'react'
+import { CreateRecord, UpdateRecord } from '../services/recordService'
 
-function RecordForm({ records, hideRecordForm, habits }) {
-  const [loading, setLoading] = useState(false)
+function RecordForm(props) {
+  const { records, selectedRecord = null, hideRecordForm, habits, setRecords } = props
   const { getAccessTokenSilently } = useAuth0()
-  const [formData, setFormData] = useState({
-    date: new Date(),
-    note: '',
-    habitID: '',
-  })
-  
+  const [loading, setLoading] = useState(false)
+  const [formData, setFormData] = useState({ date: new Date(), note: '', habitID: '' })
+
+  useEffect(() => {
+    if (selectedRecord != null) setFormData({
+      date: selectedRecord.date,
+      note: selectedRecord.note,
+      habitID: selectedRecord.habitID,
+    })
+  }, [selectedRecord])
+
   function handleChange(e) {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
@@ -20,12 +25,19 @@ function RecordForm({ records, hideRecordForm, habits }) {
     e.preventDefault()
     setLoading(true)
     const token = await getAccessTokenSilently()
-    const payload = { ...formData }
-    const { error, data, message } =  await CreateRecord({ token, payload })
+    const values = { ...formData }
+    const { error, data, message } = (selectedRecord == null)
+      ? await CreateRecord({ token, values })
+      : await UpdateRecord({ token, recordID: selectedRecord.id, values })
     alert(message)
     setLoading(false)
     if (error) return
-    const newRecords = [...records, { ...data }]
+    const newRecords = [...records]
+    if (selectedRecord == null) newRecords.push({ ...data })
+    else {
+      const updatedIndex = newRecords.findIndex(record => record.id == selectedRecord.id)
+      newRecords[updatedIndex] = { ...newRecords[updatedIndex], ...formData }
+    }  
     setRecords(newRecords)
     hideRecordForm()
   }
@@ -53,7 +65,7 @@ function RecordForm({ records, hideRecordForm, habits }) {
       placeholder='Note'
       maxLength={2000}
       name='note'
-      value={formData.name}
+      value={formData.note}
       onChange={handleChange}
       ></textarea>
     </label>
