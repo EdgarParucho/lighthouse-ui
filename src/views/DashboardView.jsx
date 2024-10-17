@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { GetAll } from '../services/'
 import { DeleteHabit } from '../services/habitService'
+import { DeleteRecord } from '../services/recordService'
 import LogoutButton from '../components/LogoutButton'
 import Skeleton from '../components/Skeleton'
 import HabitForm from '../components/HabitForm'
 import RecordForm from '../components/RecordForm'
 import RecordCard from '../components/RecordCard'
-import { DeleteRecord } from '../services/recordService'
+import EmailForm from '../components/EmailForm'
 
 const Habit = ({ habit, showHabitForm, askConfirmationToDeleteHabit }) => {
 return <>
@@ -27,6 +28,7 @@ function DashboardView() {
   const [loading, setLoading] = useState(false)
   const [showingHabitForm, setShowingHabitForm] = useState(false)
   const [showingRecordForm, setShowingRecordForm] = useState(false)
+  const [showingEmailForm, setShowingEmailForm] = useState(false)
   const [errorFetching, setErrorFetching] = useState(false)
   const [habitNames, setHabitNames] = useState({})
 
@@ -150,6 +152,8 @@ function DashboardView() {
     askConfirmationToDeleteRecord={() => askConfirmationToDeleteRecord(record)}
     />
   )}
+  {showingEmailForm && <EmailForm hideEmailForm={() => setShowingEmailForm(false)} />}
+  <button type='button' onClick={() => setShowingEmailForm(true)}>Update e-mail</button>
   <LogoutButton />
   </>
 }
