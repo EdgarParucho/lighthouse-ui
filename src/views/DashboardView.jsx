@@ -62,6 +62,8 @@ function DashboardView() {
     const deletedIndex = newHabits.findIndex(habit => habit.id == id)
     newHabits.splice(deletedIndex, 1)
     setHabits(newHabits)
+    const newRecords = records.filter(record => record.habitID != id)
+    setRecords([...newRecords])
   }
 
   const askConfirmationToDeleteRecord = async ({ id }) => {
