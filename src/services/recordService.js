@@ -28,3 +28,16 @@ export function UpdateRecord({ token, recordID, values }) {
       message: errorMessage(error),
     }))
 }
+
+export function DeleteRecord({ token, recordID }) {
+  const headers = { Authorization: 'Bearer ' + token }
+  return axios.delete('/record/' + recordID, { headers })
+    .then(() => Object({
+      error: false,
+      message: 'Done: Record deleted',
+    }))
+    .catch((error) => Object({
+      error: true,
+      message: errorMessage(error),
+    }))
+}

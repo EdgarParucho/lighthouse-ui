@@ -7,6 +7,7 @@ import Skeleton from '../components/Skeleton'
 import HabitForm from '../components/HabitForm'
 import RecordForm from '../components/RecordForm'
 import RecordCard from '../components/RecordCard'
+import { DeleteRecord } from '../services/recordService'
 
 const Habit = ({ habit, showHabitForm, askConfirmationToDeleteHabit }) => {
 return <>
@@ -61,7 +62,22 @@ function DashboardView() {
     const deletedIndex = newHabits.findIndex(habit => habit.id == id)
     newHabits.splice(deletedIndex, 1)
     setHabits(newHabits)
+  }
 
+  const askConfirmationToDeleteRecord = async ({ id }) => {
+    const deletionConfirmed = confirm('You are about to delete this record.\nThis action is irreversible, please confirm to proceed.')
+    if (!deletionConfirmed) return
+    setLoading(true)
+    const token = await getAccessTokenSilently()
+    const { error, message } = await DeleteRecord({ token, recordID: id })
+    alert(message)
+    setLoading(false)
+    if (error) return setErrorFetching(true)
+    else if (errorFetching) setErrorFetching(false)
+    const newRecords = [...records]
+    const deletedIndex = newRecords.findIndex(record => record.id == id)
+    newRecords.splice(deletedIndex, 1)
+    setRecords(newRecords)
   }
 
   async function fetchData() {
@@ -120,7 +136,8 @@ function DashboardView() {
     habit={habit}
     key={habit.id}
     showHabitForm={() => showHabitForm(habit)}
-    askConfirmationToDeleteHabit={() => askConfirmationToDeleteHabit(habit)}/>
+    askConfirmationToDeleteHabit={() => askConfirmationToDeleteHabit(habit)}
+    />
   )}
   <h2>Records</h2>
   { records.map(record => <RecordCard
@@ -128,6 +145,7 @@ function DashboardView() {
     habitName={habitNames[record.habitID]}
     key={record.id}
     showRecordForm={() => showRecordForm(record)}
+    askConfirmationToDeleteRecord={() => askConfirmationToDeleteRecord(record)}
     />
   )}
   <LogoutButton />
