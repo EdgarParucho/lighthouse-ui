@@ -1,6 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import { useEffect, useState } from 'react'
-import { CreateRecord, UpdateRecord } from '../services/recordService'
+import { CreateRecord, UpdateRecord } from '../../services/recordService'
 
 function RecordForm(props) {
   const { records, selectedRecord = null, hideRecordForm, habits, setRecords } = props

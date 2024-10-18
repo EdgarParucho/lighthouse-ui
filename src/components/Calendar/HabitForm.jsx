@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { CreateHabit, UpdateHabit } from '../services/habitService'
+import { CreateHabit, UpdateHabit } from '../../services/habitService'
 
 const HabitForm = ({ habits, selectedHabit = null, hideHabitForm, setHabits }) => {
   const { getAccessTokenSilently } = useAuth0()

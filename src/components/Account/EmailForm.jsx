@@ -1,6 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import { useState } from 'react'
-import { UpdateEmail } from '../services/accountService'
+import { UpdateEmail } from '../../services/accountService'
 
 function EmailForm({ hideEmailForm }) {
   const { getAccessTokenSilently } = useAuth0()

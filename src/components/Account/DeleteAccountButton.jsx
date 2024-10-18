@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { DeleteAccount } from '../services/accountService'
+import { DeleteAccount } from '../../services/accountService'
 
 const DeleteAccountButton = () => {
   const [loading, setLoading] = useState(false)
