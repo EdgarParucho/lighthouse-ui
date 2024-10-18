@@ -18,7 +18,7 @@ export function CreateHabit({ token, values }) {
 
 export function UpdateHabit({ token, habitID, values }) {
   const headers = { Authorization: 'Bearer ' + token }
-  return axios.put('/habit/' + habitID, values, { headers })
+  return axios.patch('/habit/' + habitID, values, { headers })
     .then(() => Object({
       error: false,
       message: 'Done: Habit updated',

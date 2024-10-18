@@ -18,7 +18,7 @@ export function CreateRecord({ token, values }) {
 
 export function UpdateRecord({ token, recordID, values }) {
   const headers = { Authorization: 'Bearer ' + token }
-  return axios.put('/record/' + recordID, values, { headers })
+  return axios.patch('/record/' + recordID, values, { headers })
     .then(() => Object({
       error: false,
       message: 'Done: Record updated',
