@@ -9,6 +9,7 @@ import HabitForm from '../components/HabitForm'
 import RecordForm from '../components/RecordForm'
 import RecordCard from '../components/RecordCard'
 import EmailForm from '../components/EmailForm'
+import DeleteAccountButton from '../components/DeleteAccountButton'
 
 const Habit = ({ habit, showHabitForm, askConfirmationToDeleteHabit }) => {
 return <>
@@ -29,6 +30,7 @@ function DashboardView() {
   const [showingHabitForm, setShowingHabitForm] = useState(false)
   const [showingRecordForm, setShowingRecordForm] = useState(false)
   const [showingEmailForm, setShowingEmailForm] = useState(false)
+  const [showingAccountOptions, setShowingAccountOptions] = useState(false)
   const [errorFetching, setErrorFetching] = useState(false)
   const [habitNames, setHabitNames] = useState({})
 
@@ -152,8 +154,14 @@ function DashboardView() {
     askConfirmationToDeleteRecord={() => askConfirmationToDeleteRecord(record)}
     />
   )}
-  {showingEmailForm && <EmailForm hideEmailForm={() => setShowingEmailForm(false)} />}
-  <button type='button' onClick={() => setShowingEmailForm(true)}>Update e-mail</button>
+  { showingAccountOptions && <>
+    <button type='button' onClick={() => setShowingEmailForm(true)}>
+      Update e-mail
+    </button>
+    <DeleteAccountButton />
+  </> }
+  <button type='button' onClick={() => setShowingAccountOptions(true)}>Account</button>
+  { showingEmailForm && <EmailForm hideEmailForm={() => setShowingEmailForm(false)} /> }
   <LogoutButton />
   </>
 }

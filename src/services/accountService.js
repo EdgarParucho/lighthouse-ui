@@ -13,3 +13,16 @@ export function UpdateEmail({ token, values }) {
       message: errorMessage(error),
     }))
 }
+
+export function DeleteAccount({ token }) {
+  const headers = { Authorization: 'Bearer ' + token }
+  return axios.delete('/account', { headers })
+    .then(() => Object({
+      error: false,
+      message: 'Done: Account deleted',
+    }))
+    .catch((error) => Object({
+      error: true,
+      message: errorMessage(error),
+    }))
+}
