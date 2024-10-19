@@ -1,20 +1,22 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import { useEffect, useState } from 'react'
 import { CreateRecord, UpdateRecord } from '../../services/recordService'
+import { useSelectionContext } from '../../context/SelectionContext'
 
-function RecordForm(props) {
-  const { records, selectedRecord = null, hideRecordForm, habits, setRecords } = props
+const RecordForm = (props) => {
+  const { habits, records, setRecords, hideBottomSheet } = props
+  const { selectedData } = useSelectionContext()
   const { getAccessTokenSilently } = useAuth0()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({ date: new Date(), note: '', habitID: '' })
 
   useEffect(() => {
-    if (selectedRecord != null) setFormData({
-      date: selectedRecord.date,
-      note: selectedRecord.note,
-      habitID: selectedRecord.habitID,
+    if (selectedData != null) setFormData({
+      date: selectedData.date,
+      note: selectedData.note,
+      habitID: selectedData.habitID,
     })
-  }, [selectedRecord])
+  }, [selectedData])
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -26,20 +28,20 @@ function RecordForm(props) {
     setLoading(true)
     const token = await getAccessTokenSilently()
     const values = { ...formData }
-    const { error, data, message } = (selectedRecord == null)
+    const { error, data, message } = (selectedData == null)
       ? await CreateRecord({ token, values })
-      : await UpdateRecord({ token, recordID: selectedRecord.id, values })
+      : await UpdateRecord({ token, recordID: selectedData.id, values })
     alert(message)
     setLoading(false)
     if (error) return
     const newRecords = [...records]
-    if (selectedRecord == null) newRecords.push({ ...data })
+    if (selectedData == null) newRecords.push({ ...data })
     else {
-      const updatedIndex = newRecords.findIndex(record => record.id == selectedRecord.id)
+      const updatedIndex = newRecords.findIndex(record => record.id == selectedData.id)
       newRecords[updatedIndex] = { ...newRecords[updatedIndex], ...formData }
     }  
     setRecords(newRecords)
-    hideRecordForm()
+    hideBottomSheet()
   }
 
   return <>
@@ -69,7 +71,7 @@ function RecordForm(props) {
       onChange={handleChange}
       ></textarea>
     </label>
-    <button type="button" disabled={loading} onClick={hideRecordForm}>Cancel</button>
+    <button type="button" disabled={loading} onClick={hideBottomSheet}>Cancel</button>
     <button type="submit" disabled={loading}>Confirm</button>
   </form>
   </>

@@ -5,7 +5,7 @@ const defaultErrMessage = 'An error ocurred. Please try again later while we sol
 const networkError = (e) => e.message?.toLowerCase().includes('network')
 const errorMessage = (e) => networkError(e) ? networkErrMessage : defaultErrMessage
 
-function GetAll(token) {
+function Start(token) {
   return axios.get('/', { headers: { Authorization: 'Bearer ' + token } })
     .then(({ status, data }) => Object({
       error: false,
@@ -20,6 +20,6 @@ function GetAll(token) {
 }
 
 export {
-  GetAll,
+  Start,
   errorMessage
 }

@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { CreateHabit, UpdateHabit } from '../../services/habitService'
+import { useSelectionContext } from '../../context/SelectionContext'
 
-const HabitForm = ({ habits, selectedHabit = null, hideHabitForm, setHabits }) => {
+const HabitForm = ({ habits, setHabits, hideBottomSheet }) => {
+  const { selectedData } = useSelectionContext()
   const { getAccessTokenSilently } = useAuth0()
   const [formData, setFormData] = useState({ name: '', createdAt: new Date() })
   const [loading, setLoading] = useState(false)
   
   useEffect(() => {
-    if (selectedHabit != null) setFormData({
-      name: selectedHabit.name,
-      createdAt: selectedHabit.createdAt,
+    if (selectedData != null) setFormData({
+      name: selectedData.name,
+      createdAt: selectedData.createdAt,
     })
-  }, [selectedHabit])
+  }, [selectedData])
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -24,20 +26,20 @@ const HabitForm = ({ habits, selectedHabit = null, hideHabitForm, setHabits }) =
     setLoading(true)
     const token = await getAccessTokenSilently()
     const values = { ...formData }
-    const { error, data, message } = (selectedHabit == null)
+    const { error, data, message } = (selectedData == null)
       ? await CreateHabit({ token, values })
-      : await UpdateHabit({ token, habitID: selectedHabit.id, values })
+      : await UpdateHabit({ token, habitID: selectedData.id, values })
     alert(message)
     setLoading(false)
     if (error) return
     const newHabits = [...habits]
-    if (selectedHabit == null) newHabits.push({ ...data })
+    if (selectedData == null) newHabits.push({ ...data })
     else {
-      const updatedIndex = newHabits.findIndex(habit => habit.id == selectedHabit.id)
+      const updatedIndex = newHabits.findIndex(habit => habit.id == selectedData.id)
       newHabits[updatedIndex] = { ...newHabits[updatedIndex], ...formData }
     }
     setHabits(newHabits)
-    hideHabitForm()
+    hideBottomSheet()
   }
 
   return <>
@@ -57,7 +59,7 @@ const HabitForm = ({ habits, selectedHabit = null, hideHabitForm, setHabits }) =
     <label>
       <input type="date" name='createdAt' value={formData.createdAt} onChange={handleChange} />
     </label>
-    <button type="button" disabled={loading} onClick={hideHabitForm}>Cancel</button>
+    <button type="button" disabled={loading} onClick={hideBottomSheet}>Cancel</button>
     <button type="submit" disabled={loading}>Confirm</button>
   </form>
   </>

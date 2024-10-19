@@ -6,8 +6,11 @@ const DeleteAccountButton = () => {
   const [loading, setLoading] = useState(false)
   const { getAccessTokenSilently, logout } = useAuth0()
 
-  async function alertAccountDeletion() {
-    const confirmed = confirm('You are about to delete this account with the habits and records associated.\nThis action is irreversible, please confirm to proceed.')
+  async function confirmAndDeleteAccount() {
+    const confirmed = confirm(
+      'You are about to delete this account with the habits and records associated.\n' +
+      'This action is irreversible, please confirm to proceed.'
+    )
     if (!confirmed) return
     setLoading(true)
     const token = await getAccessTokenSilently()
@@ -19,7 +22,7 @@ const DeleteAccountButton = () => {
     logout({ logoutParams })
   }
 
-  return <button type='button' onClick={alertAccountDeletion} disabled={loading}>
+  return <button type='button' onClick={confirmAndDeleteAccount} disabled={loading}>
     Delete Account
   </button>}
 

@@ -2,7 +2,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { useState } from 'react'
 import { UpdateEmail } from '../../services/accountService'
 
-function EmailForm({ hideEmailForm }) {
+const EmailForm = ({ hideBottomSheet }) => {
   const { getAccessTokenSilently } = useAuth0()
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
@@ -14,7 +14,7 @@ function EmailForm({ hideEmailForm }) {
     const { error, message } = await UpdateEmail({ token, values: { email } })
     alert(message)
     setLoading(false)
-    if (!error) hideEmailForm()
+    if (!error) hideBottomSheet()
   }
 
   function handleChange(e) {
@@ -24,8 +24,8 @@ function EmailForm({ hideEmailForm }) {
 
   return <form onSubmit={handleSubmit}>
     <label>
-      <input type="email" placeholder="example@mail.com" value={email} onChange={handleChange} />
-      <button type='button' disabled={loading} onClick={hideEmailForm}>Cancel</button>
+      <input type='email' placeholder='example@mail.com' value={email} onChange={handleChange} />
+      <button type='button' disabled={loading} onClick={hideBottomSheet}>Cancel</button>
       <button type='submit'>Update</button>
     </label>
   </form>
