@@ -1,20 +1,18 @@
 import { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { CreateHabit, UpdateHabit } from '../../services/habitService'
-import { useSelectionContext } from '../../context/SelectionContext'
 
-const HabitForm = ({ habits, setHabits, hideBottomSheet }) => {
-  const { selectedData } = useSelectionContext()
+const HabitForm = ({ habits, selection, setHabits, hideBottomSheet }) => {
   const { getAccessTokenSilently } = useAuth0()
   const [formData, setFormData] = useState({ name: '', createdAt: new Date() })
   const [loading, setLoading] = useState(false)
   
   useEffect(() => {
-    if (selectedData != null) setFormData({
-      name: selectedData.name,
-      createdAt: selectedData.createdAt,
+    if (selection != null) setFormData({
+      name: selection.name,
+      createdAt: selection.createdAt,
     })
-  }, [selectedData])
+  }, [selection])
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -26,16 +24,16 @@ const HabitForm = ({ habits, setHabits, hideBottomSheet }) => {
     setLoading(true)
     const token = await getAccessTokenSilently()
     const values = { ...formData }
-    const { error, data, message } = (selectedData == null)
+    const { error, data, message } = (selection == null)
       ? await CreateHabit({ token, values })
-      : await UpdateHabit({ token, habitID: selectedData.id, values })
+      : await UpdateHabit({ token, habitID: selection.id, values })
     alert(message)
     setLoading(false)
     if (error) return
     const newHabits = [...habits]
-    if (selectedData == null) newHabits.push({ ...data })
+    if (selection == null) newHabits.push({ ...data })
     else {
-      const updatedIndex = newHabits.findIndex(habit => habit.id == selectedData.id)
+      const updatedIndex = newHabits.findIndex(habit => habit.id == selection.id)
       newHabits[updatedIndex] = { ...newHabits[updatedIndex], ...formData }
     }
     setHabits(newHabits)

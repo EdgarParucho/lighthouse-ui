@@ -29,7 +29,7 @@ const Calendar = ({ habits, setHabits, setRecords, showHabitForm }) => {
   return <>
     <section>
       <h2>Habits</h2>
-      <button type="button" onClick={showHabitForm}>Add Habit</button>
+      <button type="button" onClick={() => showHabitForm()}>Add Habit</button>
       { habits.map(habit => <CalendarRow
         habit={habit}
         showHabitForm={() => showHabitForm(habit)}

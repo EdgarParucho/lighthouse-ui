@@ -1,22 +1,20 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import { useEffect, useState } from 'react'
 import { CreateRecord, UpdateRecord } from '../../services/recordService'
-import { useSelectionContext } from '../../context/SelectionContext'
 
 const RecordForm = (props) => {
-  const { habits, records, setRecords, hideBottomSheet } = props
-  const { selectedData } = useSelectionContext()
+  const { habits, selection, records, setRecords, hideBottomSheet } = props
   const { getAccessTokenSilently } = useAuth0()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({ date: new Date(), note: '', habitID: '' })
 
   useEffect(() => {
-    if (selectedData != null) setFormData({
-      date: selectedData.date,
-      note: selectedData.note,
-      habitID: selectedData.habitID,
+    if (selection != null) setFormData({
+      date: selection.date,
+      note: selection.note,
+      habitID: selection.habitID,
     })
-  }, [selectedData])
+  }, [selection])
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -28,16 +26,16 @@ const RecordForm = (props) => {
     setLoading(true)
     const token = await getAccessTokenSilently()
     const values = { ...formData }
-    const { error, data, message } = (selectedData == null)
+    const { error, data, message } = (selection == null)
       ? await CreateRecord({ token, values })
-      : await UpdateRecord({ token, recordID: selectedData.id, values })
+      : await UpdateRecord({ token, recordID: selection.id, values })
     alert(message)
     setLoading(false)
     if (error) return
     const newRecords = [...records]
-    if (selectedData == null) newRecords.push({ ...data })
+    if (selection == null) newRecords.push({ ...data })
     else {
-      const updatedIndex = newRecords.findIndex(record => record.id == selectedData.id)
+      const updatedIndex = newRecords.findIndex(record => record.id == selection.id)
       newRecords[updatedIndex] = { ...newRecords[updatedIndex], ...formData }
     }  
     setRecords(newRecords)
