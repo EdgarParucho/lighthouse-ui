@@ -2,16 +2,16 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { DeleteHabit } from '../../services/habitService'
 import CalendarRow from './CalendarRow'
 
-const Calendar = ({ habits, setHabits, setRecords, showHabitForm }) => {
+const Calendar = (props) => {
   const { getAccessTokenSilently } = useAuth0()
 
   function updateAssociations(id) {
-    const newHabits = [...habits]
+    const newHabits = [...props.habits]
     const deletedIndex = newHabits.findIndex(habit => habit.id == id)
     newHabits.splice(deletedIndex, 1)
-    setHabits(newHabits)
+    props.setHabits(newHabits)
     const newRecords = records.filter(record => record.habitID != id)
-    setRecords(newRecords)
+    props.setRecords(newRecords)
   }
 
   async function confirmAndDeleteHabit({ id }) {
@@ -20,8 +20,10 @@ const Calendar = ({ habits, setHabits, setRecords, showHabitForm }) => {
       'This action is irreversible, please confirm to proceed.'
     )
     if (!confirmed) return
+    props.setLoading(true)
     const token = await getAccessTokenSilently()
     const { error, message } = await DeleteHabit({ token, habitID: id })
+    props.setLoading(false)
     if (error) return alert(message)
     updateAssociations(id)
   }
@@ -29,10 +31,15 @@ const Calendar = ({ habits, setHabits, setRecords, showHabitForm }) => {
   return <>
     <section>
       <h2>Habits</h2>
-      <button type="button" onClick={() => showHabitForm()}>Add Habit</button>
-      { habits.map(habit => <CalendarRow
+      <button
+      type="button"
+      onClick={() => props.showDrawer({ option: 'habitForm', data: null })}
+      >
+        Add Habit
+      </button>
+      { props.habits.map(habit => <CalendarRow
         habit={habit}
-        showHabitForm={() => showHabitForm(habit)}
+        showDrawer={() => props.showDrawer({ option: 'habitForm', data: habit })}
         confirmAndDeleteHabit={() => confirmAndDeleteHabit(habit)}
         key={habit.id}
       />) }

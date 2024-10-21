@@ -1,4 +1,4 @@
-const MainButton = ({ showRecordForm }) => <button type="button" onClick={showRecordForm}>
+const MainButton = ({ showDrawer }) => <button type="button" onClick={showDrawer}>
   Add Record
 </button>
 

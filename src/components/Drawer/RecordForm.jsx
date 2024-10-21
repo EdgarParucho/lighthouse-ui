@@ -3,18 +3,16 @@ import { useEffect, useState } from 'react'
 import { CreateRecord, UpdateRecord } from '../../services/recordService'
 
 const RecordForm = (props) => {
-  const { habits, selection, records, setRecords, hideBottomSheet } = props
   const { getAccessTokenSilently } = useAuth0()
-  const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({ date: new Date(), note: '', habitID: '' })
 
   useEffect(() => {
-    if (selection != null) setFormData({
-      date: selection.date,
-      note: selection.note,
-      habitID: selection.habitID,
+    if (props.selection != null) setFormData({
+      date: props.selection.date,
+      note: props.selection.note,
+      habitID: props.selection.habitID,
     })
-  }, [selection])
+  }, [props.selection])
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -23,23 +21,23 @@ const RecordForm = (props) => {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    setLoading(true)
+    props.setLoading(true)
     const token = await getAccessTokenSilently()
     const values = { ...formData }
-    const { error, data, message } = (selection == null)
+    const { error, data, message } = (props.selection == null)
       ? await CreateRecord({ token, values })
-      : await UpdateRecord({ token, recordID: selection.id, values })
+      : await UpdateRecord({ token, recordID: props.selection.id, values })
     alert(message)
-    setLoading(false)
+    props.setLoading(false)
     if (error) return
-    const newRecords = [...records]
-    if (selection == null) newRecords.push({ ...data })
+    const newRecords = [...props.records]
+    if (props.selection == null) newRecords.push({ ...data })
     else {
-      const updatedIndex = newRecords.findIndex(record => record.id == selection.id)
+      const updatedIndex = newRecords.findIndex(record => record.id == props.selection.id)
       newRecords[updatedIndex] = { ...newRecords[updatedIndex], ...formData }
     }  
-    setRecords(newRecords)
-    hideBottomSheet()
+    props.setRecords(newRecords)
+    props.hideDrawer()
   }
 
   return <>
@@ -47,7 +45,7 @@ const RecordForm = (props) => {
   <form onSubmit={handleSubmit}>
     <label>
       <select name="habitID" required value={formData.habitID} onChange={handleChange}>
-        { habits.map(habit => {
+        { props.habits.map(habit => {
           return <option value={habit.id} key={habit.id}>{habit.name}</option>
         })}
       </select>
@@ -69,8 +67,12 @@ const RecordForm = (props) => {
       onChange={handleChange}
       ></textarea>
     </label>
-    <button type="button" disabled={loading} onClick={hideBottomSheet}>Cancel</button>
-    <button type="submit" disabled={loading}>Confirm</button>
+    <button type="button" disabled={props.loading} onClick={props.hideDrawer}>
+      Cancel
+    </button>
+    <button type="submit" disabled={props.loading}>
+      Confirm
+    </button>
   </form>
   </>
 }

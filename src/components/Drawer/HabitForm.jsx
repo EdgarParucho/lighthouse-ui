@@ -2,17 +2,16 @@ import { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { CreateHabit, UpdateHabit } from '../../services/habitService'
 
-const HabitForm = ({ habits, selection, setHabits, hideBottomSheet }) => {
+const HabitForm = (props) => {
   const { getAccessTokenSilently } = useAuth0()
   const [formData, setFormData] = useState({ name: '', createdAt: new Date() })
-  const [loading, setLoading] = useState(false)
-  
+
   useEffect(() => {
-    if (selection != null) setFormData({
-      name: selection.name,
-      createdAt: selection.createdAt,
+    if (props.selection != null) setFormData({
+      name: props.selection.name,
+      createdAt: props.selection.createdAt,
     })
-  }, [selection])
+  }, [props.selection])
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -21,23 +20,23 @@ const HabitForm = ({ habits, selection, setHabits, hideBottomSheet }) => {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    setLoading(true)
+    props.setLoading(true)
     const token = await getAccessTokenSilently()
     const values = { ...formData }
-    const { error, data, message } = (selection == null)
+    const { error, data, message } = (props.selection == null)
       ? await CreateHabit({ token, values })
-      : await UpdateHabit({ token, habitID: selection.id, values })
+      : await UpdateHabit({ token, habitID: props.selection.id, values })
     alert(message)
-    setLoading(false)
+    props.setLoading(false)
     if (error) return
-    const newHabits = [...habits]
-    if (selection == null) newHabits.push({ ...data })
+    const newHabits = [...props.habits]
+    if (props.selection == null) newHabits.push({ ...data })
     else {
-      const updatedIndex = newHabits.findIndex(habit => habit.id == selection.id)
+      const updatedIndex = newHabits.findIndex(habit => habit.id == props.selection.id)
       newHabits[updatedIndex] = { ...newHabits[updatedIndex], ...formData }
     }
-    setHabits(newHabits)
-    hideBottomSheet()
+    props.setHabits(newHabits)
+    props.hideDrawer()
   }
 
   return <>
@@ -55,10 +54,19 @@ const HabitForm = ({ habits, selection, setHabits, hideBottomSheet }) => {
       />
     </label>
     <label>
-      <input type="date" name='createdAt' value={formData.createdAt} onChange={handleChange} />
+      <input
+      type="date"
+      name='createdAt'
+      value={formData.createdAt}
+      onChange={handleChange}
+      />
     </label>
-    <button type="button" disabled={loading} onClick={hideBottomSheet}>Cancel</button>
-    <button type="submit" disabled={loading}>Confirm</button>
+    <button type="button" disabled={props.loading} onClick={props.hideDrawer}>
+      Cancel
+    </button>
+    <button type="submit" disabled={props.loading}>
+      Confirm
+    </button>
   </form>
   </>
 }

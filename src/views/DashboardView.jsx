@@ -7,51 +7,17 @@ import Section from '../components/Layout/Section'
 import Calendar from '../components/Calendar'
 import RecordList from '../components/Record/RecordList'
 import MainButton from '../components/Layout/MainButton'
-import BottomSheet from '../components/Layout/BottomSheet'
-import AccountMenu from '../components/Account/AccountMenu'
-import EmailForm from '../components/Account/EmailForm'
-import RecordForm from '../components/Record/RecordForm'
-import HabitForm from '../components/Calendar/HabitForm'
+import Drawer from '../components/Drawer'
 
 const DashboardView = () => {
   const { getAccessTokenSilently } = useAuth0()
+  const [loading, setLoading] = useState(false)
+  const [errorFetching, setErrorFetching] = useState(false)
   const [habits, setHabits] = useState([])
   const [records, setRecords] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [showingBottomSheet, setShowingBottomSheet] = useState(false)
-  const [bottomSheetChild, setBottomSheetChild] = useState(null)
-  const [errorFetching, setErrorFetching] = useState(false)
-  const [habitNames, setHabitNames] = useState({})
-
-  function hideBottomSheet() {
-    setShowingBottomSheet(false)
-    setBottomSheetChild(null)
-  }
-  
-  function showEmailForm() {
-    hideBottomSheet()
-    const props = { hideBottomSheet }
-    setBottomSheetChild(<EmailForm {...props} />)
-    setShowingBottomSheet(true)
-  }
-
-  function showAccountMenu() {
-    const props = { showEmailForm, hideBottomSheet }
-    setBottomSheetChild(<AccountMenu {...props} />)
-    setShowingBottomSheet(true)
-  }
-
-  function showHabitForm(selection = null) {
-    const props = { habits, selection, setHabits, hideBottomSheet }
-    setBottomSheetChild(<HabitForm {...props} />)
-    setShowingBottomSheet(true)
-  }
-
-  function showRecordForm(selection = null) {
-    const props = { habits, records, selection, setRecords, hideBottomSheet }
-    setBottomSheetChild(<RecordForm {...props} />)
-    setShowingBottomSheet(true)
-  }
+  const [showingDrawer, setShowingDrawer] = useState(false)
+  const [drawerOption, setDrawerOption] = useState(null)
+  const [drawerData, setDrawerData] = useState(null)
 
   async function fetchData() {
     setLoading(true)
@@ -65,38 +31,49 @@ const DashboardView = () => {
     setRecords(data.records)
   }
 
-  function updateHabitNames() {
-    const newHabitNames = habits.reduce(
-      (previous, { id, name }) => Object({ ...previous, [id]: name }), {}
-    )
-    setHabitNames(newHabitNames)
-  }
-
   useEffect(() => {
     fetchData()
   }, [])
 
-  useEffect(() => {
-    updateHabitNames()
-  }, [habits])
+  function showDrawer({ option, data = null }) {
+    setDrawerOption(option)
+    setDrawerData(data)
+    setShowingDrawer(true)
+  }
+
+  function hideDrawer() {
+    if (drawerData != null) setDrawerData(null)
+    setShowingDrawer(false)
+  }
 
   if (errorFetching) return <ErrorFetching fetchData={fetchData} />
   else if (loading) return <Skeleton />
   return <>
-  <button type='button' onClick={showAccountMenu}>Account</button>
+  <button
+  type='button' onClick={() => showDrawer({ option: 'accountMenu', data: null })}
+  >
+    Account
+  </button>
   <h1>Lighthouse</h1>
   <Section>
-    <Calendar { ...{ habits, setHabits, setRecords, showHabitForm } } />
+    <Calendar { ...{ habits, setHabits, setRecords, showDrawer, setLoading } } />
   </Section>
   <Section>
-    <RecordList { ...{ records, habitNames, showRecordForm } } />
+    <RecordList { ...{ habits, records, setRecords, showDrawer, setLoading } } />
   </Section>
-  {showingBottomSheet &&
-    <BottomSheet hideBottomSheet={hideBottomSheet}>
-      {bottomSheetChild}
-    </BottomSheet>
-  }
-  <MainButton showRecordForm={() => showRecordForm()} />
+  {showingDrawer && <Drawer
+    drawerOption={drawerOption}
+    showDrawer={showDrawer}
+    drawerData={drawerData}
+    hideDrawer={hideDrawer}
+    habits={habits}
+    setHabits={setHabits}
+    records={records}
+    setRecords={setRecords}
+    loading={loading}
+    setLoading={setLoading}
+  />}
+  <MainButton showDrawer={() => showDrawer({ option: 'recordForm', data: null })} />
   </>
 }
 

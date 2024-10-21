@@ -1,7 +1,7 @@
-const CalendarRow = ({ habit, showHabitForm, confirmAndDeleteHabit }) => <>
-  <p>{habit.name}</p>
-  <button type='button' onClick={showHabitForm}>Update</button>
-  <button type='button' onClick={confirmAndDeleteHabit}>Delete</button>
+const CalendarRow = (props) => <>
+  <p>{props.habit.name}</p>
+  <button type='button' onClick={props.showDrawer}>Update</button>
+  <button type='button' onClick={props.confirmAndDeleteHabit}>Delete</button>
 </>
 
 export default CalendarRow

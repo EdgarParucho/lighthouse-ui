@@ -1,9 +1,9 @@
 import LogoutButton from './LogoutButton'
 import DeleteAccountButton from './DeleteAccountButton'
 
-const AccountMenu = ({ showEmailForm }) => (
+const AccountMenu = (props) => (
   <div>
-    <button type='button' onClick={showEmailForm}>
+    <button type='button' onClick={props.showEmailForm}>
       Update e-mail
     </button>
     <DeleteAccountButton />
