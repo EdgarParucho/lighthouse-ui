@@ -50,13 +50,14 @@ const DashboardView = () => {
   else if (loading) return <Skeleton />
   return <>
   <button
-  type='button' onClick={() => showDrawer({ option: 'accountMenu', data: null })}
+  type='button'
+  onClick={() => showDrawer({ option: 'accountMenu', data: null })}
   >
     Account
   </button>
   <h1>Lighthouse</h1>
   <Section>
-    <Calendar { ...{ habits, setHabits, setRecords, showDrawer, setLoading } } />
+    <Calendar { ...{ habits, records, setHabits, setRecords, showDrawer, setLoading } } />
   </Section>
   <Section>
     <RecordList { ...{ habits, records, setRecords, showDrawer, setLoading } } />

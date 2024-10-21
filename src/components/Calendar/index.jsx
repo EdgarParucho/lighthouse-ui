@@ -10,7 +10,7 @@ const Calendar = (props) => {
     const deletedIndex = newHabits.findIndex(habit => habit.id == id)
     newHabits.splice(deletedIndex, 1)
     props.setHabits(newHabits)
-    const newRecords = records.filter(record => record.habitID != id)
+    const newRecords = props.records.filter(record => record.habitID != id)
     props.setRecords(newRecords)
   }
 

@@ -1,17 +1,32 @@
 import { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { CreateHabit, UpdateHabit } from '../../services/habitService'
+import { formattedDate } from '../../utils/dateUtils'
+import { validateForm } from '../../utils/formValidator'
 
 const HabitForm = (props) => {
   const { getAccessTokenSilently } = useAuth0()
-  const [formData, setFormData] = useState({ name: '', createdAt: new Date() })
+  const [formData, setFormData] = useState({ name: '', createdAt: formattedDate() })
+  const [updating, setUpdating] = useState(false)
+  const [noUpdatesDetected, setNoUpdatesDetected] = useState(true)
 
   useEffect(() => {
-    if (props.selection != null) setFormData({
-      name: props.selection.name,
-      createdAt: props.selection.createdAt,
-    })
-  }, [props.selection])
+    if (props.selection != null) {
+      setUpdating(true)
+      setFormData({
+        name: props.selection.name,
+        createdAt: props.selection.createdAt,
+      })
+    }
+  }, [])
+
+  useEffect(() => {
+    if (updating) {
+      const nameEquals = formData.name == props.selection.name
+      const dateEquals = formData.createdAt == props.selection.createdAt
+      setNoUpdatesDetected(nameEquals && dateEquals)
+    }
+  }, [formData])
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -20,28 +35,36 @@ const HabitForm = (props) => {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    const formName = e.target.getAttribute('name')
+    const formValidationFails = validateForm({ formName, formData, updating })
+    if (formValidationFails) return alert('Please verify the form.')
     props.setLoading(true)
     const token = await getAccessTokenSilently()
     const values = { ...formData }
-    const { error, data, message } = (props.selection == null)
-      ? await CreateHabit({ token, values })
-      : await UpdateHabit({ token, habitID: props.selection.id, values })
-    alert(message)
+    const { error, data, message } = (updating)
+      ? await UpdateHabit({ token, habitID: props.selection.id, values })
+      : await CreateHabit({ token, values })
     props.setLoading(false)
+    alert(message)
     if (error) return
+    updateHabits(data)
+    props.hideDrawer()
+  }
+
+  function updateHabits(data) {
     const newHabits = [...props.habits]
-    if (props.selection == null) newHabits.push({ ...data })
-    else {
+    if (updating) {
       const updatedIndex = newHabits.findIndex(habit => habit.id == props.selection.id)
       newHabits[updatedIndex] = { ...newHabits[updatedIndex], ...formData }
     }
+    else newHabits.push({ ...data })
     props.setHabits(newHabits)
-    props.hideDrawer()
+    
   }
 
   return <>
   <h3>Habit Form</h3>
-  <form onSubmit={handleSubmit}>
+  <form onSubmit={handleSubmit} name='habitForm'>
     <label>
       <input
       type='text'
@@ -64,7 +87,7 @@ const HabitForm = (props) => {
     <button type="button" disabled={props.loading} onClick={props.hideDrawer}>
       Cancel
     </button>
-    <button type="submit" disabled={props.loading}>
+    <button type="submit" disabled={props.loading || (updating && noUpdatesDetected)}>
       Confirm
     </button>
   </form>
