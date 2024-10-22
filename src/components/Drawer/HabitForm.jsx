@@ -3,6 +3,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { CreateHabit, UpdateHabit } from '../../services/habitService'
 import { today } from '../../utils/dateUtils'
 import { validateForm } from '../../utils/formValidator'
+import { habitRulesValidator } from '../../utils/businessValidations'
 
 const HabitForm = (props) => {
   const { getAccessTokenSilently } = useAuth0()
@@ -47,6 +48,8 @@ const HabitForm = (props) => {
     const formName = e.target.getAttribute('name')
     const formValidationFails = validateForm({ formName, formData, updating })
     if (formValidationFails) return alert('Please verify the form.')
+    const rulesValidation = habitRulesValidator({ habit: formData, habits: props.habits })
+    if (rulesValidation.failed) return alert(rulesValidation.message)
     props.setLoading(true)
     const token = await getAccessTokenSilently()
     const values = updating ? getFormChanges() : { ...formData }
