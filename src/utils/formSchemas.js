@@ -1,4 +1,5 @@
-import { isValidDate } from "./dateUtils"
+import { isValidDate } from './dateUtils'
+import { isUUIDv4 } from './uuidValidator'
 
 export const validationSchemas = (updating) => Object({
   habitForm: {
@@ -11,6 +12,29 @@ export const validationSchemas = (updating) => Object({
     },
     createdAt: {
       isMandatory: false,
+      validations: [
+        (value) => typeof value == 'string',
+        (value) => isValidDate(value),
+      ],
+    },
+  },
+  recordForm: {
+    habitID: {
+      mandatory: !updating,
+      validations: [
+        (value) => typeof value == 'string',
+        (value) => isUUIDv4(value),
+      ],
+    },
+    note: {
+      mandatory: false,
+      validations: [
+        (value) => value == null || typeof value == 'string',
+        (value) => value == null || (value.length >= 0 && value.length <= 2000),
+      ],
+    },
+    date: {
+      mandatory: !updating,
       validations: [
         (value) => typeof value == 'string',
         (value) => isValidDate(value),

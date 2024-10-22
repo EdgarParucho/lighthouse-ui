@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { CreateHabit, UpdateHabit } from '../../services/habitService'
-import { formattedDate } from '../../utils/dateUtils'
+import { today } from '../../utils/dateUtils'
 import { validateForm } from '../../utils/formValidator'
 
 const HabitForm = (props) => {
   const { getAccessTokenSilently } = useAuth0()
-  const [formData, setFormData] = useState({ name: '', createdAt: formattedDate() })
+  const [formData, setFormData] = useState({ name: '', createdAt: today() })
   const [updating, setUpdating] = useState(false)
-  const [noUpdatesDetected, setNoUpdatesDetected] = useState(true)
+  const [changeDetected, setChangeDetected] = useState(false)
 
   useEffect(() => {
     if (props.selection != null) {
@@ -22,11 +22,20 @@ const HabitForm = (props) => {
 
   useEffect(() => {
     if (updating) {
-      const nameEquals = formData.name == props.selection.name
-      const dateEquals = formData.createdAt == props.selection.createdAt
-      setNoUpdatesDetected(nameEquals && dateEquals)
+      if (formData.name != props.selection.name) setChangeDetected(true)
+      else if (formData.createdAt != props.selection.createdAt) setChangeDetected(true)
+      else setChangeDetected(false)
     }
   }, [formData])
+
+  function getFormChanges() {
+    const nameChanged = formData.name != props.selection.name
+    const dateChanged = formData.createdAt != props.selection.createdAt
+    const updatedValues = {}
+    if (nameChanged) updatedValues.name = formData.name
+    if (dateChanged) updatedValues.createdAt = formData.createdAt
+    return updatedValues
+  }
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -40,7 +49,7 @@ const HabitForm = (props) => {
     if (formValidationFails) return alert('Please verify the form.')
     props.setLoading(true)
     const token = await getAccessTokenSilently()
-    const values = { ...formData }
+    const values = updating ? getFormChanges() : { ...formData }
     const { error, data, message } = (updating)
       ? await UpdateHabit({ token, habitID: props.selection.id, values })
       : await CreateHabit({ token, values })
@@ -74,6 +83,7 @@ const HabitForm = (props) => {
       name='name'
       value={formData.name}
       onChange={handleChange}
+      disabled={props.loading}
       />
     </label>
     <label>
@@ -82,12 +92,13 @@ const HabitForm = (props) => {
       name='createdAt'
       value={formData.createdAt}
       onChange={handleChange}
+      disabled={props.loading}
       />
     </label>
     <button type="button" disabled={props.loading} onClick={props.hideDrawer}>
       Cancel
     </button>
-    <button type="submit" disabled={props.loading || (updating && noUpdatesDetected)}>
+    <button type="submit" disabled={props.loading || (updating && !changeDetected)}>
       Confirm
     </button>
   </form>
