@@ -15,45 +15,40 @@ const Drawer = (props) => {
   }
 
   function showEmailForm() {
-    props.hideDrawer()
     props.showDrawer({ option: 'emailForm', data: null })
   }
 
-  function getComponentProps() {
-    switch (props.drawerOption) {
-      case 'accountMenu':
-        return { showEmailForm, hideDrawer: props.hideDrawer }
-      case 'emailForm':
-      return { hideDrawer: props.hideDrawer }
-      case 'habitForm':
-        return Object({
-          habits: props.habits,
-          setHabits: props.setHabits,
-          loading: props.loading,
-          setLoading: props.setLoading,
-          selection: props.drawerData,
-          hideDrawer: props.hideDrawer
-        })
-      case 'recordForm':
-        return Object({
-          habits: props.habits,
-          records: props.records,
-          setRecords: props.setRecords,
-          loading: props.loading,
-          setLoading: props.setLoading,
-          selection: props.drawerData,
-          hideDrawer: props.hideDrawer
-        })
-      default:
-        break;
+  const getComponentProps = () => Object({
+    accountMenu: { showEmailForm, hideDrawer: props.hideDrawer },
+    emailForm: {
+      hideDrawer: props.hideDrawer,
+      loading: props.loading,
+      setLoading: props.setLoading
+    },
+    habitForm: {
+      habits: props.habits,
+      setHabits: props.setHabits,
+      loading: props.loading,
+      setLoading: props.setLoading,
+      selection: props.drawerData,
+      hideDrawer: props.hideDrawer
+    },
+    recordForm: {
+      habits: props.habits,
+      records: props.records,
+      setRecords: props.setRecords,
+      loading: props.loading,
+      setLoading: props.setLoading,
+      selection: props.drawerData,
+      hideDrawer: props.hideDrawer
     }
-  }
+  })
 
   useEffect(() => {
     const Component = drawerOptions[props.drawerOption]
-    const componentProps = getComponentProps()
+    const componentProps = getComponentProps()[props.drawerOption]
     setDrawerContent(<Component { ...componentProps } />)
-  }, [])
+  }, [props.drawerOption])
 
   return (
     <div>

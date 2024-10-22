@@ -40,5 +40,17 @@ export const validationSchemas = (updating) => Object({
         (value) => isValidDate(value),
       ],
     },
-  }
+  },
+  emailForm: {
+    email: {
+      isMandatory: true,
+      validations: [
+        (value) => typeof value == 'string',
+        (value) => {
+          const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+          return regex.test(value)
+        },
+      ]
+    },
+  },
 })

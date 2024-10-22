@@ -1,6 +1,6 @@
 import { validationSchemas } from "./formSchemas"
 
-export function validateForm({ formName, formData, updating }) {
+export function validateForm({ formName, formData, updating = false }) {
   const validationSchema = validationSchemas(updating)[formName]
   const containsUnexpectedKey = Object.keys(formData)
     .some(key => validationSchema[key] == undefined)

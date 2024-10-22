@@ -36,12 +36,14 @@ const DashboardView = () => {
   }, [])
 
   function showDrawer({ option, data = null }) {
+    if (showingDrawer) hideDrawer()
     setDrawerOption(option)
     setDrawerData(data)
     setShowingDrawer(true)
   }
 
   function hideDrawer() {
+    setDrawerOption(null)
     if (drawerData != null) setDrawerData(null)
     setShowingDrawer(false)
   }
