@@ -3,6 +3,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { CreateRecord, UpdateRecord } from '../../services/recordService'
 import { today } from '../../utils/dateUtils'
 import { validateForm } from '../../utils/formValidator'
+import { recordRulesValidator } from '../../utils/businessValidations'
 
 const RecordForm = (props) => {
   const { getAccessTokenSilently } = useAuth0()
@@ -51,6 +52,8 @@ const RecordForm = (props) => {
     const formName = e.target.getAttribute('name')
     const formValidationFails = validateForm({ formName, formData, updating })
     if (formValidationFails) return alert('Please verify the form.')
+    const rulesValidation = recordRulesValidator({ record: formData, records: props.records, habits: props.habits })
+    if (rulesValidation.failed) return alert(rulesValidation.message)
     props.setLoading(true)
     const token = await getAccessTokenSilently()
     const values = updating ? getFormChanges() : { ...formData }
