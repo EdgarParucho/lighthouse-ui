@@ -1,0 +1,23 @@
+.action-button {
+  width: 120px;
+  height: 2.4rem;
+  border: none;
+  border-radius: 2px;
+  font-family: "Caveat", serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--primary);
+  background-color: var(--secondary);
+  cursor: pointer;
+  transition: background-color .5s;
+}
+
+.action-button:hover {
+  background-color: var(--accent);
+}
+
+.action-button:disabled {
+  background-color: #777;
+}

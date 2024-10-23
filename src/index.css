@@ -1,6 +1,20 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --primary: #F1F1F1;
+  --secondary: #151515;
+  --accent: #070707;
+  font-family: "Caveat", serif;
+  font-optical-sizing: auto;
+  font-style: normal;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--secondary);
+  background-color: var(--primary);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
 }
