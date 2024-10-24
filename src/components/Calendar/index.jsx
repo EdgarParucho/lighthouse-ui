@@ -30,7 +30,6 @@ const Calendar = (props) => {
 
   return <>
     <section>
-      <h2>Habits</h2>
       <button
       type="button"
       onClick={() => props.showDrawer({ option: 'habitForm', data: null })}

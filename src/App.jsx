@@ -8,10 +8,17 @@ const ErrorMessage = () => <p>Sorry, we have an issue with the authentication.</
 function App() {
   const { isAuthenticated, error } = useAuth0()
 
-  if (error) return <ErrorMessage />
-  else if (isAuthenticated) return <DashboardView />
-  else return <StartView />
-  
+  return <>
+  <header className='header'>
+    <h1 className="header__title">Lighthouse</h1>
+    <h3 className="header__subtitle">Habit Tracker</h3>
+  </header>
+  <main>
+    { error && <ErrorMessage /> }
+    { isAuthenticated && <DashboardView /> }
+    { !isAuthenticated && <StartView /> }
+  </main>
+  </>
 }
 
 export default App

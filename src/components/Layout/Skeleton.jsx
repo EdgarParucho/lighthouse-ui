@@ -2,9 +2,7 @@ import './skeleton.css'
 
 const Skeleton = () => <>
   <div className='skeleton-container'>
-    <div className="skeleton skeleton_ml-auto skeleton_w-sm" />
-    <div className="skeleton skeleton_mx-auto skeleton_w-lg skeleton_mt-20" />
-    <div className="skeleton skeleton_mx-auto skeleton_my-40" />
+    <div className="skeleton skeleton_mx-auto skeleton_w-lg skeleton_my-40" />
     <div className="flex-container">
       <div className="skeleton skeleton_w-lg" />
       <div className="skeleton skeleton_w-sm" />

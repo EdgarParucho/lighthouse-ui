@@ -8,6 +8,7 @@ import Calendar from '../components/Calendar'
 import RecordList from '../components/Record/RecordList'
 import MainButton from '../components/Layout/MainButton'
 import Drawer from '../components/Drawer'
+import './dashboardView.css'
 
 const DashboardView = () => {
   const { getAccessTokenSilently } = useAuth0()
@@ -23,8 +24,8 @@ const DashboardView = () => {
     setLoading(true)
     const token = await getAccessTokenSilently()
     const { error, data, message } = await Start(token)
-    alert(message)
     setLoading(false)
+    alert(message)
     if (error) return setErrorFetching(true)
     else if (errorFetching) setErrorFetching(false)
     setHabits(data.habits)
@@ -48,35 +49,35 @@ const DashboardView = () => {
     setShowingDrawer(false)
   }
 
-  if (errorFetching) return <ErrorFetching fetchData={fetchData} />
-  else if (loading) return <Skeleton />
-  return <>
-  <button
-  type='button'
-  onClick={() => showDrawer({ option: 'accountMenu', data: null })}
-  >
-    Account
-  </button>
-  <h1>Lighthouse</h1>
-  <Section>
-    <Calendar { ...{ habits, records, setHabits, setRecords, showDrawer, setLoading } } />
-  </Section>
-  <Section>
-    <RecordList { ...{ habits, records, setRecords, showDrawer, setLoading } } />
-  </Section>
-  {showingDrawer && <Drawer
-    drawerOption={drawerOption}
-    showDrawer={showDrawer}
-    drawerData={drawerData}
-    hideDrawer={hideDrawer}
-    habits={habits}
-    setHabits={setHabits}
-    records={records}
-    setRecords={setRecords}
-    loading={loading}
-    setLoading={setLoading}
-  />}
-  <MainButton showDrawer={() => showDrawer({ option: 'recordForm', data: null })} />
+  if (loading) return <Skeleton />
+  else if (errorFetching) return <ErrorFetching fetchData={fetchData} />
+  else return <>
+    <button
+    className='button button_absolute button_top-10 button_right-10'
+    disabled={loading}
+    onClick={() => showDrawer({ option: 'accountMenu', data: null })}
+    >
+      Account
+    </button>
+    <Section>
+      <Calendar { ...{ habits, records, setHabits, setRecords, showDrawer, setLoading } } />
+    </Section>
+    <Section>
+      <RecordList { ...{ habits, records, setRecords, showDrawer, setLoading } } />
+    </Section>
+    {showingDrawer && <Drawer
+      drawerOption={drawerOption}
+      showDrawer={showDrawer}
+      drawerData={drawerData}
+      hideDrawer={hideDrawer}
+      habits={habits}
+      setHabits={setHabits}
+      records={records}
+      setRecords={setRecords}
+      loading={loading}
+      setLoading={setLoading}
+    />}
+    <MainButton showDrawer={() => showDrawer({ option: 'recordForm', data: null })} />
   </>
 }
 
