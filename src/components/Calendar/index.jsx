@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { DeleteHabit } from '../../services/habitService'
 import { GetRecords } from '../../services/recordService'
-import { firstOfMonth, isoDate, monthNames } from '../../utils/dateUtils'
+import { firstOfMonth, monthNames } from '../../utils/dateUtils'
 import CalendarRow from './CalendarRow'
 
 const Calendar = (props) => {
@@ -13,19 +13,17 @@ const Calendar = (props) => {
 
   useEffect(() => {
     const options = props.habits.reduce((previous, current) => {
-      const option = formatOption(current.createdAt)
+      const option = addOption(current.createdAt)
       return { ...previous, ...option }
     }, {})
     setSelectOptions(Object.entries(options))
   }, [])
 
-  function formatOption(date = new Date()) {
-    const habitDate = new Date(date)
-    const habitCreationMonth = monthNames[habitDate.getMonth()]
-    const habitCreationYear = habitDate.getFullYear()
-    const text = `${habitCreationMonth}, ${habitCreationYear}`
-    const value = firstOfMonth(habitDate)
-    return { [text]: value }
+  function addOption(date) {
+    const [year, month] = date.split('-').map(Number)
+    const key = `${monthNames[month]}, ${year}`
+    const value = `${year}-${month}-01`
+    return { [key]: value }
   }
 
   function onMonthChange({ target }) {

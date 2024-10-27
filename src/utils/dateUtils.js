@@ -1,32 +1,27 @@
 const now = new Date()
+const year = now.getFullYear()
+const month = String(now.getMonth() + 1).padStart(2, '0')
+const day = String(now.getDate()).padStart(2, '0')
 
-export const monthNames = {
-  0: 'January',
-  1: 'February',
-  2: 'March',
-  3: 'April',
-  4: 'May',
-  5: 'June',
-  6: 'July',
-  7: 'August',
-  8: 'September',
-  9: 'October',
-  10: 'November',
-  11: 'December'
-}
-
-export const isoDate = (date = now) => {
-  const yyyy = new Date(date).getFullYear()
-  const mm = String(new Date(date).getMonth() + 1).padStart(2, '0')
-  const dd = String(new Date(date).getDate()).padStart(2, '0')
-  return `${yyyy}-${mm}-${dd}`
-}
+export const isoDate = () => `${year}-${month}-${day}`
+export const firstOfMonth = () => `${year}-${month}-01`
 
 export const isValidDate = (value) => {
   const date = new Date(value)
   return !isNaN(date.getTime())
 }
 
-export const firstOfMonth = (date = now) => {
-  return isoDate(new Date(date.getFullYear(), date.getMonth(), 1))
+export const monthNames = {
+  1: 'January',
+  2: 'February',
+  3: 'March',
+  4: 'April',
+  5: 'May',
+  6: 'June',
+  7: 'July',
+  8: 'August',
+  9: 'September',
+  10: 'October',
+  11: 'November',
+  12: 'December'
 }
