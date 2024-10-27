@@ -33,11 +33,26 @@ export function DeleteRecord({ token, recordID }) {
   const headers = { Authorization: 'Bearer ' + token }
   return axios.delete('/record/' + recordID, { headers })
     .then(() => Object({
+        error: false,
+        message: 'Done: Record deleted',
+      }))
+      .catch((error) => Object({
+        error: true,
+        message: errorMessage(error),
+      }))
+}
+
+export function GetRecords({ token, from, to }) {
+  const headers = { Authorization: 'Bearer ' + token }
+  return axios.get(`/record/?from=${from}&to=${to}`, { headers })
+    .then(({ data }) => Object({
       error: false,
-      message: 'Done: Record deleted',
+      message: null,
+      data
     }))
     .catch((error) => Object({
       error: true,
       message: errorMessage(error),
+      data: null
     }))
 }

@@ -12,7 +12,8 @@ import './dashboardView.css'
 
 const DashboardView = () => {
   const { getAccessTokenSilently } = useAuth0()
-  const [loading, setLoading] = useState(false)
+  const [starting, setStarting] = useState(false)
+  const [querying, setQuerying] = useState(false)
   const [errorFetching, setErrorFetching] = useState(false)
   const [habits, setHabits] = useState([])
   const [records, setRecords] = useState([])
@@ -21,10 +22,10 @@ const DashboardView = () => {
   const [drawerData, setDrawerData] = useState(null)
 
   async function fetchData() {
-    setLoading(true)
+    setStarting(true)
     const token = await getAccessTokenSilently()
     const { error, data, message } = await Start(token)
-    setLoading(false)
+    setStarting(false)
     alert(message)
     if (error) return setErrorFetching(true)
     else if (errorFetching) setErrorFetching(false)
@@ -49,34 +50,34 @@ const DashboardView = () => {
     setShowingDrawer(false)
   }
 
-  if (loading) return <Skeleton />
+  if (starting) return <Skeleton />
   else if (errorFetching) return <ErrorFetching fetchData={fetchData} />
   else return <>
     <button
     className='button button_absolute button_top-10 button_right-10'
-    disabled={loading}
     onClick={() => showDrawer({ option: 'accountMenu', data: null })}
+    disabled={querying}
     >
       Account
     </button>
     <Section>
-      <Calendar { ...{ habits, records, setHabits, setRecords, showDrawer, setLoading } } />
+      <Calendar { ...{ habits, setHabits, records, setRecords, querying, setQuerying, showDrawer } } />
     </Section>
     <Section>
-      <RecordList { ...{ habits, records, setRecords, showDrawer, setLoading } } />
+      <RecordList { ...{ habits, records, setRecords, querying, setQuerying, showDrawer } } />
     </Section>
-    {showingDrawer && <Drawer
-      drawerOption={drawerOption}
-      showDrawer={showDrawer}
-      drawerData={drawerData}
-      hideDrawer={hideDrawer}
-      habits={habits}
-      setHabits={setHabits}
-      records={records}
-      setRecords={setRecords}
-      loading={loading}
-      setLoading={setLoading}
-    />}
+    { showingDrawer && <Drawer { ...{
+      showDrawer,
+      hideDrawer,
+      drawerOption,
+      drawerData,
+      habits,
+      setHabits,
+      records,
+      setRecords,
+      querying,
+      setQuerying
+    } } />}
     <MainButton showDrawer={() => showDrawer({ option: 'recordForm', data: null })} />
   </>
 }

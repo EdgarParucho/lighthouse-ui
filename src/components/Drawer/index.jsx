@@ -6,6 +6,7 @@ import HabitForm from './HabitForm'
 
 const Drawer = (props) => {
   const [drawerContent, setDrawerContent] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   const drawerOptions = {
     accountMenu: AccountMenu,
@@ -22,14 +23,14 @@ const Drawer = (props) => {
     accountMenu: { showEmailForm, hideDrawer: props.hideDrawer },
     emailForm: {
       hideDrawer: props.hideDrawer,
-      loading: props.loading,
-      setLoading: props.setLoading
+      loading,
+      setLoading
     },
     habitForm: {
       habits: props.habits,
       setHabits: props.setHabits,
-      loading: props.loading,
-      setLoading: props.setLoading,
+      loading,
+      setLoading,
       selection: props.drawerData,
       hideDrawer: props.hideDrawer
     },
@@ -37,8 +38,8 @@ const Drawer = (props) => {
       habits: props.habits,
       records: props.records,
       setRecords: props.setRecords,
-      loading: props.loading,
-      setLoading: props.setLoading,
+      loading,
+      setLoading,
       selection: props.drawerData,
       hideDrawer: props.hideDrawer
     }
@@ -53,7 +54,7 @@ const Drawer = (props) => {
   return (
     <div>
       {drawerContent}
-      <button type="button" onClick={props.hideDrawer}>
+      <button type="button" onClick={props.hideDrawer} disabled={loading}>
         Close
       </button>
     </div>

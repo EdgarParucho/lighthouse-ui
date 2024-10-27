@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { CreateHabit, UpdateHabit } from '../../services/habitService'
-import { today } from '../../utils/dateUtils'
+import { isoDate } from '../../utils/dateUtils'
 import { validateForm } from '../../utils/formValidator'
 import { habitRulesValidator } from '../../utils/businessValidations'
 
 const HabitForm = (props) => {
   const { getAccessTokenSilently } = useAuth0()
-  const [formData, setFormData] = useState({ name: '', createdAt: today() })
+  const [formData, setFormData] = useState({ name: '', createdAt: isoDate() })
   const [updating, setUpdating] = useState(false)
   const [changeDetected, setChangeDetected] = useState(false)
 
@@ -16,7 +16,7 @@ const HabitForm = (props) => {
       setUpdating(true)
       setFormData({
         name: props.selection.name,
-        createdAt: props.selection.createdAt,
+        createdAt: isoDate(props.selection.createdAt),
       })
     }
   }, [])
@@ -48,7 +48,12 @@ const HabitForm = (props) => {
     const formName = e.target.getAttribute('name')
     const formValidationFails = validateForm({ formName, formData, updating })
     if (formValidationFails) return alert('Please verify the form.')
-    const rulesValidation = habitRulesValidator({ habit: formData, habits: props.habits })
+    const rulesValidation = habitRulesValidator({
+      habit: formData,
+      habits: updating
+        ? props.habits.filter(h => h.id != props.selection.id)
+        : props.habits
+    })
     if (rulesValidation.failed) return alert(rulesValidation.message)
     props.setLoading(true)
     const token = await getAccessTokenSilently()

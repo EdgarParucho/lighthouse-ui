@@ -20,11 +20,11 @@ const RecordList = (props) => {
       'This action is irreversible, please confirm to proceed.'
     )
     if (!confirmed) return
-    props.setLoading(true)
+    props.setQuerying(true)
     const token = await getAccessTokenSilently()
     const { error, message } = await DeleteRecord({ token, recordID: id })
     alert(message)
-    props.setLoading(false)
+    props.setQuerying(false)
     if (error) return
     const newRecords = [...props.records]
     const deletedIndex = newRecords.findIndex(record => record.id == id)
