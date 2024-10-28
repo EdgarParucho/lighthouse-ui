@@ -39,8 +39,15 @@
   margin-bottom: 2px;
 }
 
+.table__row_mb-20 {
+  margin-bottom: 20px;
+}
+
 .table__cell {
-  padding: 0 4px;
+  width: 24px;
+  height: 24px;
+  margin-left: 2px;
+  font-size: 18px;
   border: 1px solid var(--secondary);
   position: relative;
 }
@@ -50,7 +57,11 @@
 }
 
 .table__cell_lg {
-  width: 200px;
+  width: 230px;
+}
+
+.table__cell_text-center {
+  text-align: center;
 }
 
 .table__cell_grid {

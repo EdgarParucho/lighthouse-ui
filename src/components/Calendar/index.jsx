@@ -13,6 +13,7 @@ const Calendar = (props) => {
   const [selectOptions, setSelectOptions] = useState([])
   const [calendarRecords, setCalendarRecords] = useState(props.records)
   const [tableHeaders, setTableHeaders] = useState([])
+  const [tableRows, setTableRows] = useState([])
 
   useEffect(() => {
     const options = props.habits.reduce((previous, current) => {
@@ -26,7 +27,20 @@ const Calendar = (props) => {
     const range = getRangeLimit(selectedMonth)
     updateCalendarRecords(range)
     getTableHeaders(range)
+    getTableRows()
   }, [selectedMonth])
+
+  useEffect(() => {
+    getTableRows()
+  }, [props.records, props.records])
+
+  function getRangeLimit(from) {
+    const [fromYear, fromMonth] = from.split('-').map(Number)
+    const toMonth = fromMonth == 12 ? 1 : fromMonth + 1
+    const toYear = fromMonth == 12 ? fromYear + 1 : fromYear
+    const to = `${toYear}-${String(toMonth).padStart(2, '0')}-01`
+    return { from, to }
+  }
 
   function updateCalendarRecords({ from, to }) {
     const localRecordsFiltered = props.records.filter(r => r.date >= from && r.date < to)
@@ -48,12 +62,17 @@ const Calendar = (props) => {
     setTableHeaders(headersData)
   }
 
-  function getRangeLimit(from) {
-    const [fromYear, fromMonth] = from.split('-').map(Number)
-    const toMonth = fromMonth == 12 ? 1 : fromMonth + 1
-    const toYear = fromMonth == 12 ? fromYear + 1 : fromYear
-    const to = `${toYear}-${String(toMonth).padStart(2, '0')}-01`
-    return { from, to }
+  function getTableRows() {
+    const rows = {}
+    for (let habit of props.habits) rows[habit.id] = {
+      habitName: habit.name,
+      habitRecords: Array(tableHeaders.length).fill(null)
+    }
+    for (let record of calendarRecords) {
+      const index = record.date.slice(8)
+      rows[record.habitID].habitRecords[index] = record
+    }
+    setTableRows(Object.entries(rows))
   }
 
   function addOption(date) {
@@ -73,6 +92,7 @@ const Calendar = (props) => {
     props.setQuerying(true)
     const token = await getAccessTokenSilently()
     const { error, message, data } = await GetRecords({ token, from, to })
+    
     props.setQuerying(false)
     if (error) return alert(message)
     else if (data.length == 0) return alert('No records found')
@@ -125,7 +145,7 @@ const Calendar = (props) => {
     </button>
     <table className='table'>
       <thead>
-        <tr className='table__row'>
+        <tr className='table__row table__row_mb-20'>
           <th className='table__cell table__cell_lg table__cell_border-none'>
             Habit
           </th>
@@ -140,13 +160,14 @@ const Calendar = (props) => {
         </tr>
       </thead>
       <tbody>
-        { props.habits.map(habit => <CalendarRow
-          habit={habit}
-          showDrawer={() => props.showDrawer({ option: 'habitForm', data: habit })}
-          confirmAndDeleteHabit={() => confirmAndDeleteHabit(habit)}
+        { tableRows.map(([habitID, { habitName, habitRecords }]) => <CalendarRow
+          habitName={habitName}
+          records={habitRecords }
+          showDrawer={() => props.showDrawer({ option: 'habitForm', data: habitID })}
+          confirmAndDeleteHabit={() => confirmAndDeleteHabit(habitID)}
           querying={props.querying}
           setQuerying={props.setQuerying}
-          key={habit.id}
+          key={habitID}
         />) }
       </tbody>
     </table>
