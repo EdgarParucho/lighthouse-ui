@@ -8,105 +8,102 @@ import './calendar.css'
 
 const Calendar = (props) => {
   const { getAccessTokenSilently } = useAuth0()
-  const { firstOfMonth } = dateUtils
-  const [selectedMonth, setSelectedMonth] = useState(firstOfMonth())
-  const [selectOptions, setSelectOptions] = useState([])
-  const [calendarRecords, setCalendarRecords] = useState(props.records)
-  const [tableHeaders, setTableHeaders] = useState([])
-  const [tableRows, setTableRows] = useState([])
+  const { getMonthRange, monthYearFormatter } = dateUtils
+  const defaultOption = monthYearFormatter()
+  const defaultRange = getMonthRange()
+  const [selectedRange, setSelectedRange] = useState(defaultOption)
+  const [rangeOptions, setRangeOptions] = useState({ [defaultOption]: defaultRange })
+  const [rangeRecords, setRangeRecords] = useState(props.records)
+  const [headers, setHeaders] = useState([])
+  const [rows, setRows] = useState([])
 
   useEffect(() => {
-    const options = props.habits.reduce((previous, current) => {
-      const option = addOption(current.createdAt)
-      return { ...previous, ...option }
-    }, {})
-    setSelectOptions(Object.entries(options))
-  }, [])
+    updateRangeOptions()
+    updateDataRows(rangeOptions[selectedRange])
+  }, [props.habits])
 
   useEffect(() => {
-    const range = getRangeLimit(selectedMonth)
-    updateCalendarRecords(range)
-    getTableHeaders(range)
-    getTableRows()
-  }, [selectedMonth])
+    updateHeaderRow(rangeOptions[selectedRange])
+    updateRangeRecords(rangeOptions[selectedRange])
+  }, [selectedRange])
 
   useEffect(() => {
-    getTableRows()
-  }, [props.records, props.records])
+    updateDataRows(rangeOptions[selectedRange])
+  }, [rangeRecords])
 
-  function getRangeLimit(from) {
-    const [fromYear, fromMonth] = from.split('-').map(Number)
-    const toMonth = fromMonth == 12 ? 1 : fromMonth + 1
-    const toYear = fromMonth == 12 ? fromYear + 1 : fromYear
-    const to = `${toYear}-${String(toMonth).padStart(2, '0')}-01`
-    return { from, to }
+  useEffect(() => {
+    updateRangeRecords(rangeOptions[selectedRange])
+  }, [props.records])
+
+  function updateRangeOptions() {
+    const habitDates = props.habits.reduce((options, { createdAt }) => Object({
+      ...options,
+      ...getRangeOption(createdAt)
+    }), [])
+    setRangeOptions(habitDates)
   }
 
-  function updateCalendarRecords({ from, to }) {
-    const localRecordsFiltered = props.records.filter(r => r.date >= from && r.date < to)
-    if (localRecordsFiltered.length > 0) setCalendarRecords(localRecordsFiltered)
-    else getRecords({ from, to })
-  }
-
-  function getTableHeaders({ from, to }) {
-    const { milisecondsXDay, dayNames } = dateUtils
-    const monthDays = (new Date(to) - new Date(from)) / milisecondsXDay
-    const headersData = []
-    const [year, month] = from.split('-').map(Number)
-    const getDayName = (dd) => dayNames[new Date(year, month - 1, dd).getDay()]
-    for (let i = 1; i <= monthDays; i++) {
-      const date = String(i).padStart(2, 0)
-      const isCurrentDate = i == new Date().getDate()
-      headersData.push({ date, isCurrentDate, weekday: getDayName(date) })
+  function getRangeOption(date) {
+    const text = dateUtils.monthYearFormatter(date)
+    return {
+      [text]: getMonthRange(date)
     }
-    setTableHeaders(headersData)
   }
 
-  function getTableRows() {
-    const rows = {}
-    for (let habit of props.habits) rows[habit.id] = {
-      habitName: habit.name,
-      habitRecords: Array(tableHeaders.length).fill(null)
-    }
-    for (let record of calendarRecords) {
-      const index = record.date.slice(8)
-      rows[record.habitID].habitRecords[index] = record
-    }
-    setTableRows(Object.entries(rows))
+  function onRangeOptionChange(e) {
+    const option = e.target.value
+    setSelectedRange(option)
   }
 
-  function addOption(date) {
-    const { monthNames } = dateUtils
-    const [year, month] = date.split('-').map(Number)
-    const key = `${monthNames[month]}, ${year}`
-    const value = `${year}-${month}-01`
-    return { [key]: value }
+  function updateHeaderRow({ fromDate, toDate }) {
+    const { dayNames } = dateUtils
+    const [year, month] = fromDate.split('-')
+    const calendarDays = getCalendarDays({ fromDate, toDate })
+    const getDay = (date) => new Date(year, Number(month) - 1, date).getDay()
+    const headers = Array.from({ length: calendarDays }, (_, i) => Object({
+      date: String(i + 1).padStart(2, 0),
+      dayName: dayNames[getDay(i + 1)]
+    }))
+    setHeaders(headers)
+  }
+  
+  function getCalendarDays({ fromDate, toDate }) {
+    const { milisecondsByDay } = dateUtils
+    const daysInMiliseconds = new Date(toDate) - new Date(fromDate)
+    return Math.round(daysInMiliseconds / milisecondsByDay)
   }
 
-  function onMonthChange({ target }) {
-    const { value: from } = target
-    setSelectedMonth(from)
-  }
+  async function updateRangeRecords({ fromDate, toDate }) {
+    const recordsFiltered = props.records.filter(r => r.date >= fromDate && r.date < toDate)
+    if (recordsFiltered.length > 0) return setRangeRecords(recordsFiltered)
 
-  async function getRecords({ from, to }) {
     props.setQuerying(true)
     const token = await getAccessTokenSilently()
-    const { error, message, data } = await GetRecords({ token, from, to })
-    
+    const { error, message, data } = await GetRecords({ token, from: fromDate, to: toDate })
     props.setQuerying(false)
+
     if (error) return alert(message)
-    else if (data.length == 0) return alert('No records found')
+    else if (data.length == 0) return setRangeRecords([])
+
     props.setRecords([...props.records, ...data])
-    setCalendarRecords(data)
+    setRangeRecords(data)
   }
 
-  function updateAssociations(id) {
-    const newHabits = [...props.habits]
-    const deletedIndex = newHabits.findIndex(habit => habit.id == id)
-    newHabits.splice(deletedIndex, 1)
-    props.setHabits(newHabits)
-    const newRecords = props.records.filter(record => record.habitID != id)
-    props.setRecords(newRecords)
+  function updateDataRows({ fromDate, toDate }) {
+    const calendarDays = getCalendarDays({ fromDate, toDate })
+    const rows = props.habits.reduce((rows, habit) => Object({
+      ...rows,
+      [habit.id]: {
+        habitName: habit.name,
+        habitRecords: Array.from({ length: calendarDays }).fill(null)
+      }
+    }), {})
+
+    rangeRecords.forEach(({ date, habitID, ...rest }) => {
+      const [, , day] = date.split('-').map(Number)
+      rows[habitID].habitRecords[day - 1] = { date, habitID, ...rest }
+    })
+    setRows(Object.entries(rows))
   }
 
   async function confirmAndDeleteHabit({ id }) {
@@ -123,16 +120,27 @@ const Calendar = (props) => {
     updateAssociations(id)
   }
 
+  function updateAssociations(id) {
+    const newHabits = [...props.habits]
+    const deletedIndex = newHabits.findIndex(habit => habit.id == id)
+    newHabits.splice(deletedIndex, 1)
+    props.setHabits(newHabits)
+    const newRecords = props.records.filter(record => record.habitID != id)
+    props.setRecords(newRecords)
+  }
+
   return <div>
     <label htmlFor='month' className='label label_mx-auto'>Month</label>
     <select
     id='month'
     className='month-selector'
-    value={selectedMonth}
-    onChange={onMonthChange}
+    value={selectedRange}
+    onChange={onRangeOptionChange}
     >
-      { selectOptions.map(([optionText, optionValue]) => (
-        <option value={optionValue} key={optionText}>{optionText}</option>
+      { Object.keys(rangeOptions).map((option) => (
+        <option value={option} key={option}>
+          {option}
+        </option>
       )) }
     </select>
     <button
@@ -149,20 +157,20 @@ const Calendar = (props) => {
           <th className='table__cell table__cell_lg table__cell_border-none'>
             Habit
           </th>
-          { tableHeaders.map(header => <th
+          { headers.map((header) => <th
           key={header.date}
           className='table__cell table__cell_border-none table__cell_grid'
           >
             <span>{header.date}</span>
-            <span>{header.weekday[0]}</span>
+            <span>{header.dayName[0]}</span>
           </th>)
           }
         </tr>
       </thead>
       <tbody>
-        { tableRows.map(([habitID, { habitName, habitRecords }]) => <CalendarRow
+        { rows.map(([habitID, { habitName, habitRecords }]) => <CalendarRow
           habitName={habitName}
-          records={habitRecords }
+          records={habitRecords}
           showDrawer={() => props.showDrawer({ option: 'habitForm', data: habitID })}
           confirmAndDeleteHabit={() => confirmAndDeleteHabit(habitID)}
           querying={props.querying}

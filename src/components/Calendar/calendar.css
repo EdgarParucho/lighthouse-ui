@@ -48,6 +48,7 @@
   height: 24px;
   margin-left: 2px;
   font-size: 18px;
+  font-weight: 500;
   border: 1px solid var(--secondary);
   position: relative;
 }
@@ -60,16 +61,18 @@
   width: 230px;
 }
 
+.table__cell_pl-2 {
+  padding: 2px;
+}
+
+.table__cell_font-bold {
+  font-weight: bold;
+}
+
 .table__cell_text-center {
   text-align: center;
 }
 
 .table__cell_grid {
   display: grid;
-}
-
-.table__dots-button {
-  display: inline;
-  right: 1px;
-  position: absolute;
 }

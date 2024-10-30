@@ -7,7 +7,7 @@ import { habitRulesValidator } from '../../utils/businessValidations'
 
 const HabitForm = (props) => {
   const { getAccessTokenSilently } = useAuth0()
-  const [formData, setFormData] = useState({ name: '', createdAt: isoDate() })
+  const [formData, setFormData] = useState({ name: '', createdAt: isoDate })
   const [updating, setUpdating] = useState(false)
   const [changeDetected, setChangeDetected] = useState(false)
 
