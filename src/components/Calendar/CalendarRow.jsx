@@ -1,6 +1,5 @@
 const CalendarRow = (props) => {
-  return (
-  <tr className='table__row'>
+  return <tr className='table__row'>
     <td className="table__cell table__cell_lg table__cell_pl-2">
       <span>{props.habitName}</span>
       <button
@@ -13,7 +12,7 @@ const CalendarRow = (props) => {
         {record ? 'X' : ''}
       </td>
     ))}
-  </tr>)
+  </tr>
 }
 
 export default CalendarRow

@@ -6,7 +6,7 @@
   font-family: "Caveat", serif;
   font-optical-sizing: auto;
   font-style: normal;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 400;
   color: var(--secondary);
   background-color: var(--light-accent);
@@ -33,28 +33,17 @@
   top: 10px;
 }
 
-.button_top-1 {
-  top: 1px;
-}
-
 .button_right-10 {
   right: 10px;
-}
-
-.button_right-1 {
-  right: 1px;
 }
 
 .button_w-lg {
   width: 220px;
 }
 
-.button_h-sm {
-  height: 20px;
-}
-
-.button_w-sm {
-  width: 20px;
+.button_sm {
+  width: 16px;
+  height: 16px;
 }
 
 .button:hover {

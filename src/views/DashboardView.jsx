@@ -33,9 +33,7 @@ const DashboardView = () => {
     setRecords(data.records)
   }
 
-  useEffect(() => {
-    fetchData()
-  }, [])
+  useEffect(() => { fetchData() }, [])
 
   function showDrawer({ option, data = null }) {
     if (showingDrawer) hideDrawer()

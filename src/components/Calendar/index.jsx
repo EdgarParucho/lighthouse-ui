@@ -3,7 +3,6 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { DeleteHabit } from '../../services/habitService'
 import { GetRecords } from '../../services/recordService'
 import dateUtils from '../../utils/dateUtils'
-import CalendarRow from './CalendarRow'
 import './calendar.css'
 
 const Calendar = (props) => {
@@ -151,34 +150,44 @@ const Calendar = (props) => {
     >
       Add Habit
     </button>
-    <table className='table'>
-      <thead>
-        <tr className='table__row table__row_mb-20'>
-          <th className='table__cell table__cell_lg table__cell_border-none'>
-            Habit
-          </th>
-          { headers.map((header) => <th
-          key={header.date}
-          className='table__cell table__cell_border-none table__cell_grid'
-          >
-            <span>{header.date}</span>
-            <span>{header.dayName[0]}</span>
-          </th>)
-          }
-        </tr>
-      </thead>
-      <tbody>
-        { rows.map(([habitID, { habitName, habitRecords }]) => <CalendarRow
-          habitName={habitName}
-          records={habitRecords}
-          showDrawer={() => props.showDrawer({ option: 'habitForm', data: habitID })}
-          confirmAndDeleteHabit={() => confirmAndDeleteHabit(habitID)}
-          querying={props.querying}
-          setQuerying={props.setQuerying}
-          key={habitID}
-        />) }
-      </tbody>
-    </table>
+    <div className="table-container">
+      <table className='table'>
+        <thead>
+          <tr>
+            <th className='table__cell table__cell__fixed table__cell_border-none'>
+              Habit
+            </th>
+            { headers.map((header) => <th
+            key={header.date}
+            className='table__cell table__cell_border-none'
+            >
+              <span>{header.date}</span>
+              <br />
+              <span>{header.dayName[0]}</span>
+            </th>)
+            }
+          </tr>
+        </thead>
+        <tbody>
+          { rows.map(([habitID, { habitName, habitRecords }]) => (
+            <tr key={habitID}>
+              <td className="table__cell table__cell__fixed table__cell_flex">
+                <span>{habitName}</span>
+                <button
+                className="button button_sm">
+                  ...
+                </button>
+              </td>
+              { habitRecords.map((record, i) => (
+              <td className="table__cell table__cell_font-bold" key={i}>
+                {record ? 'X' : ''}
+              </td>
+            ))}
+          </tr>
+        ))}
+        </tbody>
+      </table>
+    </div>
   </div>
 }
   
