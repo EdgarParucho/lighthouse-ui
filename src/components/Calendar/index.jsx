@@ -8,41 +8,53 @@ import './calendar.css'
 const Calendar = (props) => {
   const { getAccessTokenSilently } = useAuth0()
   const { getMonthRange, monthYearFormatter } = dateUtils
-  const defaultOption = monthYearFormatter()
-  const defaultRange = getMonthRange()
-  const [selectedRange, setSelectedRange] = useState(defaultOption)
-  const [rangeOptions, setRangeOptions] = useState({ [defaultOption]: defaultRange })
-  const [rangeRecords, setRangeRecords] = useState(props.records)
+  const defaultMonth = monthYearFormatter()
+  const defaultMonthRange = getMonthRange()
+  const defaultOption = { [defaultMonth]: defaultMonthRange }
+  const [month, setMonth] = useState(defaultMonth)
+  const [monthRange, setMonthRange] = useState(defaultMonthRange)
+  const [monthOptions, setMonthOptions] = useState(defaultOption)
+  const [monthRecords, setMonthRecords] = useState(props.records)
   const [headers, setHeaders] = useState([])
   const [rows, setRows] = useState([])
+  const [starting, setStarting] = useState(true)
 
   useEffect(() => {
-    updateRangeOptions()
-    updateDataRows(rangeOptions[selectedRange])
+    if (starting) return
+    updateMonthOptions()
+    updateMonthRecords()
   }, [props.habits])
-
+  
   useEffect(() => {
-    updateHeaderRow(rangeOptions[selectedRange])
-    updateRangeRecords(rangeOptions[selectedRange])
-  }, [selectedRange])
-
-  useEffect(() => {
-    updateDataRows(rangeOptions[selectedRange])
-  }, [rangeRecords])
-
-  useEffect(() => {
-    updateRangeRecords(rangeOptions[selectedRange])
+    if (!starting) updateMonthRecords()
   }, [props.records])
 
-  function updateRangeOptions() {
-    const habitDates = props.habits.reduce((options, { createdAt }) => Object({
-      ...options,
-      ...getRangeOption(createdAt)
+  useEffect(() => {
+    if (!starting) updateDataRows()
+  }, [monthRecords])
+
+  useEffect(() => {
+    if (starting) return
+    updateHeaders()
+    updateMonthRecords()
+  }, [monthRange])
+
+  useEffect(() => {
+    updateMonthOptions()
+    updateHeaders()
+    updateDataRows()
+    setStarting(false)
+  }, [])
+
+  function updateMonthOptions() {
+    const userOptions = props.habits.reduce((formattedOptions, { createdAt }) => Object({
+      ...formattedOptions,
+      ...getFormattedOption(createdAt)
     }), [])
-    setRangeOptions(habitDates)
+    setMonthOptions(userOptions)
   }
 
-  function getRangeOption(date) {
+  function getFormattedOption(date) {
     const text = dateUtils.monthYearFormatter(date)
     return {
       [text]: getMonthRange(date)
@@ -51,10 +63,12 @@ const Calendar = (props) => {
 
   function onRangeOptionChange(e) {
     const option = e.target.value
-    setSelectedRange(option)
+    setMonth(option)
+    setMonthRange(monthOptions[option])
   }
 
-  function updateHeaderRow({ fromDate, toDate }) {
+  function updateHeaders() {
+    const { fromDate, toDate } = monthRange
     const { dayNames } = dateUtils
     const [year, month] = fromDate.split('-')
     const calendarDays = getCalendarDays({ fromDate, toDate })
@@ -72,9 +86,10 @@ const Calendar = (props) => {
     return Math.round(daysInMiliseconds / milisecondsByDay)
   }
 
-  async function updateRangeRecords({ fromDate, toDate }) {
+  async function updateMonthRecords() {
+    const { fromDate, toDate } = monthRange
     const recordsFiltered = props.records.filter(r => r.date >= fromDate && r.date < toDate)
-    if (recordsFiltered.length > 0) return setRangeRecords(recordsFiltered)
+    if (recordsFiltered.length > 0) return setMonthRecords(recordsFiltered)
 
     props.setQuerying(true)
     const token = await getAccessTokenSilently()
@@ -82,13 +97,12 @@ const Calendar = (props) => {
     props.setQuerying(false)
 
     if (error) return alert(message)
-    else if (data.length == 0) return setRangeRecords([])
-
-    props.setRecords([...props.records, ...data])
-    setRangeRecords(data)
+    else if (data.length == 0) return setMonthRecords([])
+    else props.setRecords([...props.records, ...data])
   }
 
-  function updateDataRows({ fromDate, toDate }) {
+  function updateDataRows() {
+    const { fromDate, toDate } = monthRange
     const calendarDays = getCalendarDays({ fromDate, toDate })
     const rows = props.habits.reduce((rows, habit) => Object({
       ...rows,
@@ -98,7 +112,7 @@ const Calendar = (props) => {
       }
     }), {})
 
-    rangeRecords.forEach(({ date, habitID, ...rest }) => {
+    monthRecords.forEach(({ date, habitID, ...rest }) => {
       const [, , day] = date.split('-').map(Number)
       rows[habitID].habitRecords[day - 1] = { date, habitID, ...rest }
     })
@@ -133,10 +147,10 @@ const Calendar = (props) => {
     <select
     id='month'
     className='month-selector'
-    value={selectedRange}
+    value={month}
     onChange={onRangeOptionChange}
     >
-      { Object.keys(rangeOptions).map((option) => (
+      { Object.keys(monthOptions).map((option) => (
         <option value={option} key={option}>
           {option}
         </option>

@@ -25,12 +25,14 @@ const DashboardView = () => {
     setStarting(true)
     const token = await getAccessTokenSilently()
     const { error, data, message } = await Start(token)
-    setStarting(false)
     alert(message)
-    if (error) return setErrorFetching(true)
+    if (error) setErrorFetching(true)
     else if (errorFetching) setErrorFetching(false)
-    setHabits(data.habits)
-    setRecords(data.records)
+    else {
+      setHabits(data.habits)
+      setRecords(data.records)
+    }
+    setStarting(false)
   }
 
   useEffect(() => { fetchData() }, [])
@@ -49,8 +51,8 @@ const DashboardView = () => {
   }
 
   if (starting) return <Skeleton />
-  else if (errorFetching) return <ErrorFetching fetchData={fetchData} />
-  else return <>
+  errorFetching && <ErrorFetching fetchData={fetchData} />
+  return <>
     <button
     className='button button_absolute button_top-10 button_right-10'
     onClick={() => showDrawer({ option: 'accountMenu', data: null })}
@@ -61,9 +63,9 @@ const DashboardView = () => {
     <Section>
       <Calendar { ...{ habits, setHabits, records, setRecords, querying, setQuerying, showDrawer } } />
     </Section>
-    <Section>
+    {/* <Section>
       <RecordList { ...{ habits, records, setRecords, querying, setQuerying, showDrawer } } />
-    </Section>
+    </Section> */}
     { showingDrawer && <Drawer { ...{
       showDrawer,
       hideDrawer,

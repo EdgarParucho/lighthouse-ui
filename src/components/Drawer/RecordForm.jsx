@@ -7,7 +7,11 @@ import { recordRulesValidator } from '../../utils/businessValidations'
 
 const RecordForm = (props) => {
   const { getAccessTokenSilently } = useAuth0()
-  const [formData, setFormData] = useState({ date: isoDate, note: '', habitID: '' })
+  const [formData, setFormData] = useState({
+    date: isoDate,
+    note: '',
+    habitID: props.habits[0].id
+  })
   const [updating, setUpdating] = useState(false)
   const [changeDetected, setChangeDetected] = useState(true)
 
