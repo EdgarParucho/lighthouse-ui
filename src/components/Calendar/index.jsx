@@ -3,8 +3,8 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { DeleteHabit } from '../../services/habitService'
 import { GetRecords } from '../../services/recordService'
 import dateUtils from '../../utils/dateUtils'
-import './calendar.css'
 import CalendarRow from './CalendarRow'
+import './calendar.css'
 
 const Calendar = (props) => {
   const { getAccessTokenSilently } = useAuth0()
@@ -46,7 +46,20 @@ const Calendar = (props) => {
     updateHeaders()
     updateDataRows()
     setStarting(false)
+    scrollToCurrentWeek()
   }, [])
+
+  function scrollToCurrentWeek() {
+    const tableContainer = document.getElementById('table-container')
+    const PX_BY_CELL =  31
+    const FIRST_CELL_MARGIN =  1
+    const [year, month, date] = dateUtils.isoDate.split('-')
+    if (Number(date) < 7) return tableContainer.scrollLeft = 0
+    const weekDay = new Date(year, Number(month) - 1, date).getDay() + 1
+    const daysToCurrentWeek = Number(date) - Number(weekDay)
+    const pxToScroll = (daysToCurrentWeek * PX_BY_CELL) + FIRST_CELL_MARGIN
+    tableContainer.scrollTo({ left: pxToScroll, behavior: 'smooth' })
+  }
 
   function updateMonthOptions() {
     const userOptions = props.habits.reduce((formattedOptions, { createdAt }) => Object({
@@ -69,14 +82,16 @@ const Calendar = (props) => {
   }
 
   function updateHeaders() {
-    const { dayNames } = dateUtils
+    const { dayNames, isoDate } = dateUtils
     const [year, month] = monthRange.fromDate.split('-')
     const calendarDaysUpdated = getCalendarDays(monthRange)
     setCalendarDays(calendarDaysUpdated)
     const getDay = (date) => new Date(year, Number(month) - 1, date).getDay()
+    const getDate = (i) => String(i + 1).padStart(2, 0)
     const headers = Array.from({ length: calendarDaysUpdated }, (_, i) => Object({
-      date: String(i + 1).padStart(2, 0),
-      dayName: dayNames[getDay(i + 1)]
+      date: getDate(i),
+      dayName: dayNames[getDay(i + 1)],
+      isToday: `${year}-${month}-${getDate(i)}` == isoDate
     }))
     setHeaders(headers)
   }
@@ -106,7 +121,6 @@ const Calendar = (props) => {
       }
     }), {})
 
-    // 
     monthRecords.forEach(({ date, habitID, ...rest }) => {
       const [, , day] = date.split('-').map(Number)
       rows[habitID].habitRecords[day - 1] = { date, habitID, ...rest }
@@ -159,16 +173,16 @@ const Calendar = (props) => {
     >
       Add Habit
     </button>
-    <div className="table-container">
+    <div className='table-container' id='table-container'>
       <table className='table'>
         <thead>
           <tr>
-            <th className='table__cell table__cell__fixed table__cell_border-none'>
+            <th className='table__cell table__cell__fixed table__cell_border-none table__cell_lg'>
               Habit
             </th>
             { headers.map((header) => <th
             key={header.date}
-            className='table__cell table__cell_border-none'
+            className={`table__cell table__cell_border-none ${header.isToday ? 'table__cell_bt': ''}`}
             >
               <span>{header.date}</span>
               <br />
