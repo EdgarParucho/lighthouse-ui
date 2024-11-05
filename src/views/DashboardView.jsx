@@ -63,9 +63,9 @@ const DashboardView = () => {
     <Section>
       <Calendar { ...{ habits, setHabits, records, setRecords, querying, setQuerying, showDrawer } } />
     </Section>
-    {/* <Section>
+    <Section>
       <RecordList { ...{ habits, records, setRecords, querying, setQuerying, showDrawer } } />
-    </Section> */}
+    </Section>
     { showingDrawer && <Drawer { ...{
       showDrawer,
       hideDrawer,

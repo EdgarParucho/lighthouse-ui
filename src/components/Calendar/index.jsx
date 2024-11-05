@@ -4,10 +4,11 @@ import { DeleteHabit } from '../../services/habitService'
 import { GetRecords } from '../../services/recordService'
 import dateUtils from '../../utils/dateUtils'
 import './calendar.css'
+import CalendarRow from './CalendarRow'
 
 const Calendar = (props) => {
   const { getAccessTokenSilently } = useAuth0()
-  const { getMonthRange, monthYearFormatter } = dateUtils
+  const { getMonthRange, monthYearFormatter, getCalendarDays } = dateUtils
   const defaultMonth = monthYearFormatter()
   const defaultMonthRange = getMonthRange()
   const defaultOption = { [defaultMonth]: defaultMonthRange }
@@ -17,6 +18,7 @@ const Calendar = (props) => {
   const [monthRecords, setMonthRecords] = useState(props.records)
   const [headers, setHeaders] = useState([])
   const [rows, setRows] = useState([])
+  const [calendarDays, setCalendarDays] = useState(getCalendarDays(defaultMonthRange))
   const [starting, setStarting] = useState(true)
 
   useEffect(() => {
@@ -56,9 +58,8 @@ const Calendar = (props) => {
 
   function getFormattedOption(date) {
     const text = dateUtils.monthYearFormatter(date)
-    return {
-      [text]: getMonthRange(date)
-    }
+    const range = getMonthRange(date)
+    return { [text]: range }
   }
 
   function onRangeOptionChange(e) {
@@ -68,22 +69,16 @@ const Calendar = (props) => {
   }
 
   function updateHeaders() {
-    const { fromDate, toDate } = monthRange
     const { dayNames } = dateUtils
-    const [year, month] = fromDate.split('-')
-    const calendarDays = getCalendarDays({ fromDate, toDate })
+    const [year, month] = monthRange.fromDate.split('-')
+    const calendarDaysUpdated = getCalendarDays(monthRange)
+    setCalendarDays(calendarDaysUpdated)
     const getDay = (date) => new Date(year, Number(month) - 1, date).getDay()
-    const headers = Array.from({ length: calendarDays }, (_, i) => Object({
+    const headers = Array.from({ length: calendarDaysUpdated }, (_, i) => Object({
       date: String(i + 1).padStart(2, 0),
       dayName: dayNames[getDay(i + 1)]
     }))
     setHeaders(headers)
-  }
-  
-  function getCalendarDays({ fromDate, toDate }) {
-    const { milisecondsByDay } = dateUtils
-    const daysInMiliseconds = new Date(toDate) - new Date(fromDate)
-    return Math.round(daysInMiliseconds / milisecondsByDay)
   }
 
   async function updateMonthRecords() {
@@ -102,16 +97,16 @@ const Calendar = (props) => {
   }
 
   function updateDataRows() {
-    const { fromDate, toDate } = monthRange
-    const calendarDays = getCalendarDays({ fromDate, toDate })
+    const calendarDaysUpdated = getCalendarDays(monthRange)
     const rows = props.habits.reduce((rows, habit) => Object({
       ...rows,
       [habit.id]: {
         habitName: habit.name,
-        habitRecords: Array.from({ length: calendarDays }).fill(null)
+        habitRecords: Array.from({ length: calendarDaysUpdated }).fill(null)
       }
     }), {})
 
+    // 
     monthRecords.forEach(({ date, habitID, ...rest }) => {
       const [, , day] = date.split('-').map(Number)
       rows[habitID].habitRecords[day - 1] = { date, habitID, ...rest }
@@ -183,22 +178,9 @@ const Calendar = (props) => {
           </tr>
         </thead>
         <tbody>
-          { rows.map(([habitID, { habitName, habitRecords }]) => (
-            <tr key={habitID}>
-              <td className="table__cell table__cell__fixed table__cell_flex">
-                <span>{habitName}</span>
-                <button
-                className="button button_sm">
-                  ...
-                </button>
-              </td>
-              { habitRecords.map((record, i) => (
-              <td className="table__cell table__cell_font-bold" key={i}>
-                {record ? 'X' : ''}
-              </td>
-            ))}
-          </tr>
-        ))}
+          {rows.map(([habitID, { habitName, habitRecords }]) => (
+            <CalendarRow { ...{ habitID, habitName, habitRecords, }} key={habitID} />
+          ) )}
         </tbody>
       </table>
     </div>

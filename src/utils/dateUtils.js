@@ -31,6 +31,11 @@ export const monthYearFormatter = (date) => {
   return `${monthNames[month]}, ${year}`
 }
 
+export function getCalendarDays({ fromDate, toDate }) {
+  const daysInMiliseconds = new Date(toDate) - new Date(fromDate)
+  return Math.round(daysInMiliseconds / milisecondsByDay)
+}
+
 const monthNames = {
   '01': 'January',
   '02': 'February',
@@ -63,5 +68,6 @@ export default {
   isValidDate,
   dayNames,
   monthYearFormatter,
-  getMonthRange
+  getMonthRange,
+  getCalendarDays
 }
