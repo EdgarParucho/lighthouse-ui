@@ -39,6 +39,7 @@ const Calendar = (props) => {
     if (starting) return
     updateHeaders()
     updateMonthRecords()
+    scrollToCurrentWeek(true)
   }, [monthRange])
 
   useEffect(() => {
@@ -49,12 +50,13 @@ const Calendar = (props) => {
     scrollToCurrentWeek()
   }, [])
 
-  function scrollToCurrentWeek() {
+  function scrollToCurrentWeek(monthRangeChanged = false) {
     const tableContainer = document.getElementById('table-container')
+    const [year, month, date] = dateUtils.isoDate.split('-')
+    const isFirstWeek = Number(date) < 7
+    if (isFirstWeek || monthRangeChanged) return tableContainer.scrollTo({ left: 0, behavior: 'smooth' })
     const PX_BY_CELL =  31
     const FIRST_CELL_MARGIN =  1
-    const [year, month, date] = dateUtils.isoDate.split('-')
-    if (Number(date) < 7) return tableContainer.scrollLeft = 0
     const weekDay = new Date(year, Number(month) - 1, date).getDay() + 1
     const daysToCurrentWeek = Number(date) - Number(weekDay)
     const pxToScroll = (daysToCurrentWeek * PX_BY_CELL) + FIRST_CELL_MARGIN
@@ -151,7 +153,7 @@ const Calendar = (props) => {
     props.setRecords(newRecords)
   }
 
-  return <div>
+  return <>
     <label htmlFor='month' className='label label_mx-auto'>Month</label>
     <select
     id='month'
@@ -198,7 +200,7 @@ const Calendar = (props) => {
         </tbody>
       </table>
     </div>
-  </div>
+  </>
 }
   
 export default Calendar

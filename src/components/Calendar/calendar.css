@@ -31,22 +31,22 @@
 .table-container {
   margin: 20px auto 0;
   width: 100%;
-  max-width: 318px;
+  max-width: 304px;
   overflow-x: auto;
   overflow-y: hidden;
 }
 
 .table {
+  width: 100%;
   margin: 0 auto;
   border-collapse: separate;
   border-spacing: 1px;
 }
 
 .table__cell {
-  min-width: 30px;
-  height: 30px;
+  min-width: 28px;
+  height: 28px;
   border: 1px solid var(--secondary);
-  padding: 0;
   text-align: center;
   font-weight: 500;
   background-color: var(--primary);
@@ -63,6 +63,7 @@
 
 .table__cell_border-none {
   border: none;
+  border-top: 2px solid var(--primary);
 }
 
 .table__cell__fixed {
@@ -85,4 +86,22 @@
   justify-content: space-between;
   position: sticky;
   left: 0;
+}
+
+@media screen and (min-width: 640px) {
+  .table-container {
+    max-width: 508px;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .table-container {
+    max-width: 710px;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .table-container {
+    max-width: 1001px;
+  }
 }
