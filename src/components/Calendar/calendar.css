@@ -1,6 +1,6 @@
 .month-selector {
   width: 160px;
-  margin: 0 auto 20px;
+  margin: 0 auto;
   display: block;
   text-align: center;
   border: none;
@@ -29,7 +29,7 @@
 }
 
 .table-container {
-  margin: 20px auto 0;
+  margin: 20px auto;
   width: 100%;
   max-width: 304px;
   overflow-x: auto;
@@ -66,10 +66,9 @@
   border-top: 2px solid var(--primary);
 }
 
-.table__cell__fixed {
+.table__cell_sticky {
   left: 0;
   position: sticky;
-  z-index: 1;
 }
 
 .table__cell_font-bold {
@@ -86,6 +85,19 @@
   justify-content: space-between;
   position: sticky;
   left: 0;
+}
+
+.text_lg {
+  font-size: 24px;
+}
+
+.text_centered {
+  text-align: center;
+}
+
+.text_my-20 {
+  margin-top: 40px;
+  margin-bottom: 40px;
 }
 
 @media screen and (min-width: 640px) {

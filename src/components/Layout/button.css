@@ -1,6 +1,5 @@
 .button {
   width: 80px;
-  height: 28px;
   border: none;
   border-radius: 2px;
   font-family: "Caveat", serif;
@@ -37,13 +36,12 @@
   right: 10px;
 }
 
-.button_w-lg {
-  width: 220px;
+.button_w-full {
+  width: 100%;
 }
 
-.button_sm {
-  width: 16px;
-  height: 16px;
+.button_w-lg {
+  width: 100px;
 }
 
 .button:hover {
@@ -56,5 +54,30 @@
 }
 
 .button:disabled {
+  background-color: var(--primary);
   color: #777;
+  animation: none;
+}
+
+.button_sticky-left {
+  left: 0;
+  position: sticky;
+}
+
+.button_pulse {
+  animation-name: pulse;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: var(--secondary);
+  }
+  50% {
+    background-color: var(--dark-accent);
+  }
+  100% {
+    background-color: var(--secondary);
+  }
 }

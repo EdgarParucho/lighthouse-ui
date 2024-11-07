@@ -7,8 +7,8 @@ import Section from '../components/Layout/Section'
 import Calendar from '../components/Calendar'
 import RecordList from '../components/Record/RecordList'
 import MainButton from '../components/Layout/MainButton'
+import Button from '../components/Layout/Button'
 import Drawer from '../components/Drawer'
-import './dashboardView.css'
 
 const DashboardView = () => {
   const { getAccessTokenSilently } = useAuth0()
@@ -53,13 +53,13 @@ const DashboardView = () => {
   if (starting) return <Skeleton />
   errorFetching && <ErrorFetching fetchData={fetchData} />
   return <>
-    <button
-    className='button button_absolute button_top-10 button_right-10'
-    onClick={() => showDrawer({ option: 'accountMenu', data: null })}
+    <Button
+    type='button'
     disabled={querying}
-    >
-      Account
-    </button>
+    onClick={() => showDrawer({ option: 'accountMenu', data: null })}
+    text='Account'
+    modifiers={['absolute', 'top-10', 'right-10']}
+    />
     <Section>
       <Calendar { ...{ habits, setHabits, records, setRecords, querying, setQuerying, showDrawer } } />
     </Section>

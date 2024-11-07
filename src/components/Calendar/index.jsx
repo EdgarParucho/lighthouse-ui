@@ -4,6 +4,7 @@ import { DeleteHabit } from '../../services/habitService'
 import { GetRecords } from '../../services/recordService'
 import dateUtils from '../../utils/dateUtils'
 import CalendarRow from './CalendarRow'
+import Button from '../Layout/Button'
 import './calendar.css'
 
 const Calendar = (props) => {
@@ -154,32 +155,27 @@ const Calendar = (props) => {
   }
 
   return <>
-    <label htmlFor='month' className='label label_mx-auto'>Month</label>
-    <select
-    id='month'
-    className='month-selector'
-    value={month}
-    onChange={onRangeOptionChange}
-    >
-      { Object.keys(monthOptions).map((option) => (
-        <option value={option} key={option}>
-          {option}
-        </option>
-      )) }
-    </select>
-    <button
-    type='button'
-    className='button button_w-lg button_mx-auto'
-    disabled={props.querying}
-    onClick={() => props.showDrawer({ option: 'habitForm', data: null })}
-    >
-      Add Habit
-    </button>
+    {props.habits.length > 0 && <>
+      <label htmlFor='month' className='label label_mx-auto'>Month</label>
+      <select
+      id='month'
+      className='month-selector'
+      value={month}
+      onChange={onRangeOptionChange}
+      >
+        { Object.keys(monthOptions).map((option) => (
+          <option value={option} key={option}>
+            {option}
+          </option>
+        )) }
+      </select>
+    </>
+    }
     <div className='table-container' id='table-container'>
-      <table className='table'>
+      {props.habits.length > 0 && <table className='table'>
         <thead>
           <tr>
-            <th className='table__cell table__cell__fixed table__cell_border-none table__cell_lg'>
+            <th className='table__cell table__cell_sticky table__cell_border-none table__cell_lg'>
               Habit
             </th>
             { headers.map((header) => <th
@@ -198,9 +194,20 @@ const Calendar = (props) => {
             <CalendarRow { ...{ habitID, habitName, habitRecords, }} key={habitID} />
           ) )}
         </tbody>
-      </table>
+      </table>}
+      {props.habits.length == 0 && <p className='text_lg text_centered text_my-20'><strong>Let’s start by adding a habit.</strong></p>}
+      <Button
+      type='button'
+      disabled={props.querying}
+      onClick={() => props.showDrawer({ option: 'habitForm', data: null })}
+      text='Add Habit'
+      modifiers={props.habits.length == 0
+        ? ['primary', 'w-lg', 'mx-auto', 'pulse']
+        : ['sticky-left', 'w-full']
+      }
+      />
     </div>
   </>
 }
-  
+
 export default Calendar
