@@ -1,22 +1,35 @@
 import Button from '../Layout/Button'
 
-const CalendarRow = ({ habitID, habitName, habitCells, showDrawer }) => {
+const CalendarRow = ({ habitID, habitName, habitCells, habits, showDrawer }) => {
 
-  const template = (date) => Object({
+  const getRecordTemplate = (date) => Object({
     habitID,
     date,
     note: ''
   })
 
+  function showHabitForm() {
+    showDrawer({ option: 'habitForm', data: habits.find(h => h.id == habitID) }) 
+  }
+
+  function showRecordForm(cell) {
+    showDrawer({ option: 'recordForm', data: cell.record ?? getRecordTemplate(cell.date) })
+  }
+
   return <tr>
-    <td className="table__cell table__cell_sticky table__cell_lg table__cell_text-left">
-      <span>{habitName}</span>
+    <td className="table__cell table__cell_sticky table__cell_lg">
+      <Button
+      type='button'
+      onClick={showHabitForm}
+      text={habitName}
+      modifiers={['w-full', 'h-full']}
+      />
     </td>
     { habitCells.map((cell, i) => (
       <td className="table__cell table__cell_font-bold" key={i}>
         <Button
         type='button'
-        onClick={() => showDrawer(cell.record ?? template(cell.date) )}
+        onClick={() => showRecordForm(cell)}
         disabled={cell.isFutureDate || cell.isBeforeHabitCreation}
         text={cell.record ? 'X' : ''}
         modifiers={['w-full', 'h-full', cell.record ? '' : 'mt-4']}

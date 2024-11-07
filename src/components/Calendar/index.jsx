@@ -199,10 +199,11 @@ const Calendar = (props) => {
         <tbody>
           {rows.map(([habitID, { habitName, habitCells }]) => (
             <CalendarRow
+            habits={props.habits}
             habitID={habitID}
             habitName={habitName}
             habitCells={habitCells}
-            showDrawer={(record) => props.showDrawer({ option: 'recordForm', data: record })}
+            showDrawer={props.showDrawer}
             key={habitID}
             />
           ) )}

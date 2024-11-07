@@ -8,24 +8,25 @@ import { habitRulesValidator } from '../../utils/businessValidations'
 const HabitForm = (props) => {
   const { getAccessTokenSilently } = useAuth0()
   const [formData, setFormData] = useState({ name: '', createdAt: isoDate })
-  const [updating, setUpdating] = useState(false)
-  const [changeDetected, setChangeDetected] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [lock, setLock] = useState(true)
+  const [unaltered, setUnaltered] = useState(true)
 
   useEffect(() => {
     if (props.selection != null) {
-      setUpdating(true)
+      setEditing(true)
       setFormData({
         name: props.selection.name,
-        createdAt: isoDate(props.selection.createdAt),
+        createdAt: props.selection.createdAt,
       })
     }
   }, [])
 
   useEffect(() => {
-    if (updating) {
-      if (formData.name != props.selection.name) setChangeDetected(true)
-      else if (formData.createdAt != props.selection.createdAt) setChangeDetected(true)
-      else setChangeDetected(false)
+    if (editing) {
+      if (formData.name != props.selection.name) setUnaltered(false)
+      else if (formData.createdAt != props.selection.createdAt) setUnaltered(false)
+      else setUnaltered(true)
     }
   }, [formData])
 
@@ -46,19 +47,19 @@ const HabitForm = (props) => {
   async function handleSubmit(e) {
     e.preventDefault()
     const formName = e.target.getAttribute('name')
-    const formValidationFails = validateForm({ formName, formData, updating })
+    const formValidationFails = validateForm({ formName, formData, editing })
     if (formValidationFails) return alert('Please verify the form.')
     const rulesValidation = habitRulesValidator({
       habit: formData,
-      habits: updating
+      habits: editing
         ? props.habits.filter(h => h.id != props.selection.id)
         : props.habits
     })
     if (rulesValidation.failed) return alert(rulesValidation.message)
     props.setLoading(true)
     const token = await getAccessTokenSilently()
-    const values = updating ? getFormChanges() : { ...formData }
-    const { error, data, message } = (updating)
+    const values = editing ? getFormChanges() : { ...formData }
+    const { error, data, message } = (editing)
       ? await UpdateHabit({ token, habitID: props.selection.id, values })
       : await CreateHabit({ token, values })
     props.setLoading(false)
@@ -70,7 +71,7 @@ const HabitForm = (props) => {
 
   function updateHabits(data) {
     const newHabits = [...props.habits]
-    if (updating) {
+    if (editing) {
       const updatedIndex = newHabits.findIndex(habit => habit.id == props.selection.id)
       newHabits[updatedIndex] = { ...newHabits[updatedIndex], ...formData }
     }
@@ -91,7 +92,7 @@ const HabitForm = (props) => {
       name='name'
       value={formData.name}
       onChange={handleChange}
-      disabled={props.loading}
+      disabled={props.loading || (editing && lock)}
       />
     </label>
     <label>
@@ -100,15 +101,19 @@ const HabitForm = (props) => {
       name='createdAt'
       value={formData.createdAt}
       onChange={handleChange}
-      disabled={props.loading}
+      disabled={props.loading || (editing && lock)}
       />
     </label>
     <button type="button" disabled={props.loading} onClick={props.hideDrawer}>
       Cancel
     </button>
-    <button type="submit" disabled={props.loading || (updating && !changeDetected)}>
-      Confirm
+    { editing && lock
+    ? <button type="button" disabled={props.loading} onClick={() => setLock(false)}>
+      Edit
     </button>
+    : <button type="submit" disabled={props.loading || (editing && unaltered)}>
+      Save
+    </button>}
   </form>
   </>
 }

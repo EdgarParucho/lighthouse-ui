@@ -92,11 +92,9 @@ const RecordForm = (props) => {
       required
       value={formData.habitID}
       onChange={handleChange}
-      disabled={props.loading || (updating && lock)}
+      disabled={props.loading || (editing && lock)}
       >
-        { props.habits.map(habit => {
-          return <option value={habit.id} key={habit.id}>{habit.name}</option>
-        })}
+        { props.habits.map(habit => <option value={habit.id} key={habit.id}>{habit.name}</option>) }
       </select>
     </label>
     <label>
@@ -105,7 +103,7 @@ const RecordForm = (props) => {
       name='date'
       value={formData.date}
       onChange={handleChange}
-      disabled={props.loading || (updating && lock)}
+      disabled={props.loading || (editing && lock)}
       required />
       </label>
     <label>
@@ -115,7 +113,7 @@ const RecordForm = (props) => {
       name='note'
       value={formData.note}
       onChange={handleChange}
-      disabled={props.loading || (updating && lock)}
+      disabled={props.loading || (editing && lock)}
       ></textarea>
     </label>
     <button type="button" disabled={props.loading} onClick={props.hideDrawer}>

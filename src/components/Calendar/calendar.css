@@ -56,11 +56,6 @@
   min-width: 100px;
 }
 
-.table__cell_text-left {
-  padding-left: 4px;
-  text-align: left;
-}
-
 .table__cell_border-none {
   border: none;
   border-top: 2px solid var(--primary);
