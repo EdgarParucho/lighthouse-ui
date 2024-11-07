@@ -44,6 +44,10 @@
   width: 100px;
 }
 
+.button_h-lg {
+  height: 32px;
+}
+
 .button:hover {
   color: var(--primary);
   background-color: var(--secondary);
@@ -62,6 +66,11 @@
 .button_sticky-left {
   left: 0;
   position: sticky;
+}
+
+.button_fixed {
+  position: fixed;
+  bottom: 0;
 }
 
 .button_pulse {

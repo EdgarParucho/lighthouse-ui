@@ -195,17 +195,22 @@ const Calendar = (props) => {
           ) )}
         </tbody>
       </table>}
-      {props.habits.length == 0 && <p className='text_lg text_centered text_my-20'><strong>Let’s start by adding a habit.</strong></p>}
+      {props.habits.length == 0 && <p className='text_lg text_centered text_my-20'>
+        <strong>Let’s start by adding a habit.</strong>
+      </p>}
       <Button
       type='button'
       disabled={props.querying}
       onClick={() => props.showDrawer({ option: 'habitForm', data: null })}
-      text='Add Habit'
+      text={props.querying ? 'Loading' : 'Add Habit'}
       modifiers={props.habits.length == 0
         ? ['primary', 'w-lg', 'mx-auto', 'pulse']
         : ['sticky-left', 'w-full']
       }
       />
+      {props.habits.length > 0 && props.records.length == 0 && <p className='text_lg text_centered text_my-20'>
+        <strong>Add a record using the cell you want to mark or the bottom fixed below.</strong>
+      </p>}
     </div>
   </>
 }

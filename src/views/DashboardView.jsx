@@ -6,7 +6,6 @@ import ErrorFetching from '../components/Layout/ErrorFetching'
 import Section from '../components/Layout/Section'
 import Calendar from '../components/Calendar'
 import RecordList from '../components/Record/RecordList'
-import MainButton from '../components/Layout/MainButton'
 import Button from '../components/Layout/Button'
 import Drawer from '../components/Drawer'
 
@@ -63,9 +62,10 @@ const DashboardView = () => {
     <Section>
       <Calendar { ...{ habits, setHabits, records, setRecords, querying, setQuerying, showDrawer } } />
     </Section>
+    {records.length > 0 &&
     <Section>
       <RecordList { ...{ habits, records, setRecords, querying, setQuerying, showDrawer } } />
-    </Section>
+    </Section>}
     { showingDrawer && <Drawer { ...{
       showDrawer,
       hideDrawer,
@@ -78,7 +78,14 @@ const DashboardView = () => {
       querying,
       setQuerying
     } } />}
-    <MainButton showDrawer={() => showDrawer({ option: 'recordForm', data: null })} />
+    { habits.length > 0 &&
+    <Button
+    type='button'
+    disabled={querying}
+    onClick={() => showDrawer({ option: 'recordForm', data: null })}
+    text='Add Record'
+    modifiers={['primary', 'fixed', 'bottom-0', 'w-full', 'h-lg']}
+    />}
   </>
 }
 
