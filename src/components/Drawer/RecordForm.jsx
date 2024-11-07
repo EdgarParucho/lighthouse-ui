@@ -16,8 +16,8 @@ const RecordForm = (props) => {
   const [changeDetected, setChangeDetected] = useState(true)
 
   useEffect(() => {
+    if (props.selection?.id) setUpdating(true)
     if (props.selection != null) {
-      setUpdating(true)
       setFormData({
         date: props.selection.date,
         note: props.selection.note,

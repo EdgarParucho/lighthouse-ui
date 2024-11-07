@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { DeleteHabit } from '../../services/habitService'
 import { GetRecords } from '../../services/recordService'
-import dateUtils from '../../utils/dateUtils'
+import dateUtils, { isoDate } from '../../utils/dateUtils'
 import CalendarRow from './CalendarRow'
 import Button from '../Layout/Button'
 import './calendar.css'
@@ -116,17 +116,24 @@ const Calendar = (props) => {
 
   function updateDataRows() {
     const calendarDaysUpdated = getCalendarDays(monthRange)
+    const [yyyy, mm] = monthRange.fromDate.split('-')
     const rows = props.habits.reduce((rows, habit) => Object({
       ...rows,
       [habit.id]: {
         habitName: habit.name,
-        habitRecords: Array.from({ length: calendarDaysUpdated }).fill(null)
+        habitCells: Array.from({ length: calendarDaysUpdated }, (_, i) => {
+          const dd = String(i + 1).padStart(2, 0)
+          const date = `${yyyy}-${mm}-${dd}`
+          const isFutureDate = date > isoDate
+          const isBeforeHabitCreation = habit.createdAt > date
+          return Object({ date, record: null, isFutureDate, isBeforeHabitCreation })
+        })
       }
     }), {})
 
     monthRecords.forEach(({ date, habitID, ...rest }) => {
       const [, , day] = date.split('-').map(Number)
-      rows[habitID].habitRecords[day - 1] = { date, habitID, ...rest }
+      rows[habitID].habitCells[day - 1].record = { date, habitID, ...rest }
     })
     setRows(Object.entries(rows))
   }
@@ -190,8 +197,14 @@ const Calendar = (props) => {
           </tr>
         </thead>
         <tbody>
-          {rows.map(([habitID, { habitName, habitRecords }]) => (
-            <CalendarRow { ...{ habitID, habitName, habitRecords, }} key={habitID} />
+          {rows.map(([habitID, { habitName, habitCells }]) => (
+            <CalendarRow
+            habitID={habitID}
+            habitName={habitName}
+            habitCells={habitCells}
+            showDrawer={(record) => props.showDrawer({ option: 'recordForm', data: record })}
+            key={habitID}
+            />
           ) )}
         </tbody>
       </table>}
