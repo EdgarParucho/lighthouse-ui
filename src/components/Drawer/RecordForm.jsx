@@ -17,29 +17,27 @@ const RecordForm = (props) => {
   const [unaltered, setUnaltered] = useState(true)
 
   useEffect(() => {
-    if (props.selection?.id) setEditing(true)
-    if (props.selection != null) {
-      setFormData({
-        date: props.selection.date,
-        note: props.selection.note,
-        habitID: props.selection.habitID,
-      })
-    }
+    if (props.data?.id) setEditing(true)
+    if (props.data != null) setFormData({
+      date: props.data.date,
+      note: props.data.note ?? '',
+      habitID: props.data.habitID,
+    })
   }, [])
 
   useEffect(() => {
     if (editing) {
-      if (formData.date != props.selection.date) setUnaltered(false)
-      else if (formData.note != props.selection.note) setUnaltered(false)
-      else if (formData.habitID != props.selection.habitID) setUnaltered(false)
+      if (formData.date != props.data.date) setUnaltered(false)
+      else if (formData.note != props.data.note) setUnaltered(false)
+      else if (formData.habitID != props.data.habitID) setUnaltered(false)
       else setUnaltered(true)
     }
   }, [formData])
 
   function getFormChanges() {
-    const dateChanged = formData.date != props.selection.date
-    const noteChanged = formData.note != props.selection.note
-    const habitChanged = formData.habitID != props.selection.habitID
+    const dateChanged = formData.date != props.data.date
+    const noteChanged = formData.note != props.data.note
+    const habitChanged = formData.habitID != props.data.habitID
     const updatedValues = {}
     if (noteChanged) updatedValues.note = formData.note
     if (dateChanged) updatedValues.date = formData.date
@@ -60,23 +58,23 @@ const RecordForm = (props) => {
     const rulesValidation = recordRulesValidator({
       record: formData,
       records: editing
-        ? props.records.filter(r => r.id != props.selection.id)
+        ? props.records.filter(r => r.id != props.data.id)
         : props.records,
       habits: props.habits
     })
     if (rulesValidation.failed) return alert(rulesValidation.message)
-    props.setLoading(true)
+    props.setQuerying(true)
     const token = await getAccessTokenSilently()
     const values = editing ? getFormChanges() : { ...formData }
     const { error, data, message } = (editing)
-      ? await UpdateRecord({ token, recordID: props.selection.id, values })
+      ? await UpdateRecord({ token, recordID: props.data.id, values })
       : await CreateRecord({ token, values })
     alert(message)
-    props.setLoading(false)
+    props.setQuerying(false)
     if (error) return
     const newRecords = [...props.records]
     if (editing) {
-      const updatedIndex = newRecords.findIndex(record => record.id == props.selection.id)
+      const updatedIndex = newRecords.findIndex(record => record.id == props.data.id)
       newRecords[updatedIndex] = { ...newRecords[updatedIndex], ...formData }
     } else newRecords.push({ ...data })
     props.setRecords(newRecords)
@@ -92,7 +90,7 @@ const RecordForm = (props) => {
       required
       value={formData.habitID}
       onChange={handleChange}
-      disabled={props.loading || (editing && lock)}
+      disabled={props.querying || (editing && lock)}
       >
         { props.habits.map(habit => <option value={habit.id} key={habit.id}>{habit.name}</option>) }
       </select>
@@ -103,7 +101,7 @@ const RecordForm = (props) => {
       name='date'
       value={formData.date}
       onChange={handleChange}
-      disabled={props.loading || (editing && lock)}
+      disabled={props.querying || (editing && lock)}
       required />
       </label>
     <label>
@@ -113,20 +111,22 @@ const RecordForm = (props) => {
       name='note'
       value={formData.note}
       onChange={handleChange}
-      disabled={props.loading || (editing && lock)}
+      disabled={props.querying || (editing && lock)}
       ></textarea>
     </label>
-    <button type="button" disabled={props.loading} onClick={props.hideDrawer}>
+    <button type="button" disabled={props.querying} onClick={props.hideDrawer}>
       Back
     </button>
     { editing && lock
-    ? <button type="button" disabled={props.loading} onClick={() => setLock(false)}>
+    ? <button type="button" disabled={props.querying} onClick={() => setLock(false)}>
       Edit
     </button>
-    : <button type="submit" disabled={props.loading || (editing && unaltered)}>
+    : <button type="submit" disabled={props.querying || (editing && unaltered)}>
       Save
-    </button>
-    }
+    </button>}
+    {editing && <button type="button" disabled={props.querying} onClick={props.showRecordDeletionAlert}>
+      Delete
+    </button>}
   </form>
   </>
 }

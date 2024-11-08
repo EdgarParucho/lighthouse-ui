@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { DeleteHabit } from '../../services/habitService'
 import { GetRecords } from '../../services/recordService'
 import dateUtils from '../../utils/dateUtils'
 import CalendarRow from './CalendarRow'
@@ -135,29 +134,6 @@ const Calendar = (props) => {
     setRows(Object.entries(rows))
   }
 
-  async function confirmAndDeleteHabit({ id }) {
-    const confirmed = confirm(
-      'You are about to delete this habit and its records.\n' +
-      'This action is irreversible, please confirm to proceed.'
-    )
-    if (!confirmed) return
-    props.setQuerying(true)
-    const token = await getAccessTokenSilently()
-    const { error, message } = await DeleteHabit({ token, habitID: id })
-    props.setQuerying(false)
-    if (error) return alert(message)
-    updateAssociations(id)
-  }
-
-  function updateAssociations(id) {
-    const newHabits = [...props.habits]
-    const deletedIndex = newHabits.findIndex(habit => habit.id == id)
-    newHabits.splice(deletedIndex, 1)
-    props.setHabits(newHabits)
-    const newRecords = props.records.filter(record => record.habitID != id)
-    props.setRecords(newRecords)
-  }
-
   return <>
     {props.habits.length > 0 && <>
       <label htmlFor='month' className='label label_mx-auto'>Month</label>
@@ -200,7 +176,8 @@ const Calendar = (props) => {
             habitID={habitID}
             habitName={habitName}
             habitCells={habitCells}
-            showDrawer={props.showDrawer}
+            showHabitForm={props.showHabitForm}
+            showRecordForm={props.showRecordForm}
             key={habitID}
             />
           ) )}
@@ -212,7 +189,7 @@ const Calendar = (props) => {
       <Button
       type='button'
       disabled={props.querying}
-      onClick={() => props.showDrawer({ option: 'habitForm', data: null })}
+      onClick={() => props.showHabitForm()}
       text={props.querying ? 'Loading' : 'Add Habit'}
       modifiers={props.habits.length == 0
         ? ['primary', 'w-lg', 'mx-auto', 'pulse']
