@@ -31,9 +31,19 @@ export const monthYearFormatter = (date) => {
   return `${monthNames[month]}, ${year}`
 }
 
-export function getCalendarDays({ fromDate, toDate }) {
-  const daysInMiliseconds = new Date(toDate) - new Date(fromDate)
-  return Math.round(daysInMiliseconds / milisecondsByDay)
+export function getDaysInRange({ fromDate, toDate }) {
+  const differenceInMiliseconds = new Date(toDate) - new Date(fromDate)
+  return Math.round(differenceInMiliseconds / milisecondsByDay)
+}
+
+export function getRelativeDate(date) {
+  const [yyyy, mm, dd] = date.split('-')
+  if (date == isoDate) return 'today'
+  const daysDifference = getDaysInRange({ fromDate: date, toDate: isoDate })
+  const weekday = new Date(date).getUTCDay()
+  const dayName = dayNames[weekday]
+  if (daysDifference < 7) return dayName
+  return `${dayName}, ${monthNames[mm]} ${dd}, ${yyyy}`
 }
 
 const monthNames = {
@@ -69,5 +79,6 @@ export default {
   dayNames,
   monthYearFormatter,
   getMonthRange,
-  getCalendarDays
+  getDaysInRange,
+  getRelativeDate
 }

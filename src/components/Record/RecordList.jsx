@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { DeleteRecord } from '../../services/recordService'
-import RecordCard from './RecordCard'
+import Button from '../Layout/Button'
+import dateUtils from '../../utils/dateUtils'
+import './recordList.css'
 
 const RecordList = (props) => {
   const { getAccessTokenSilently } = useAuth0()
@@ -33,14 +35,19 @@ const RecordList = (props) => {
   }
 
   return <>
-    <h2>Records</h2>
-    { props.records.map(record => <RecordCard
-      record={record}
-      habitName={habitNames[record.habitID]}
-      key={record.id}
-      showDrawer={() => props.showDrawer({ option: 'recordForm', data: record })}
-      confirmAndDeleteRecord={() => confirmAndDeleteRecord(record)}
+    <h2 className='subtitle'>Last Records</h2>
+    { props.records.map(record => <div className='record-card' key={record.id}>
+      <span className='record-card__label'>
+        {dateUtils.getRelativeDate(record.date)}
+      </span>
+      <p>{habitNames[record.habitID]}</p>
+      <Button
+      type='button'
+      modifiers={['w-sm', 'rounded-sm']}
+      onClick={() => props.showDrawer({ option: 'recordForm', data: record })}
+      text='Details'
       />
+    </div>
     )}
   </>
 }

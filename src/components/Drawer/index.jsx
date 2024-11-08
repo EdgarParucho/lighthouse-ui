@@ -3,7 +3,7 @@ import AccountMenu from './AccountMenu'
 import EmailForm from './EmailForm'
 import RecordForm from './RecordForm'
 import HabitForm from './HabitForm'
-
+import './drawer.css'
 const Drawer = (props) => {
   const [drawerContent, setDrawerContent] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -52,7 +52,7 @@ const Drawer = (props) => {
   }, [props.drawerOption])
 
   return (
-    <div>
+    <div className='drawer'>
       {drawerContent}
       <button type="button" onClick={props.hideDrawer} disabled={loading}>
         Close

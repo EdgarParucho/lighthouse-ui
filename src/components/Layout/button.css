@@ -43,6 +43,10 @@
   height: 100%;
 }
 
+.button_w-sm {
+  width: 48px;
+}
+
 .button_w-lg {
   width: 100px;
 }
@@ -53,6 +57,10 @@
 
 .button_mt-4 {
   margin-top: 4px;
+}
+
+.button_rounded-sm {
+  border-radius: 2px;
 }
 
 .button:hover {

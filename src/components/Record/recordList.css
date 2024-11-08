@@ -1,0 +1,24 @@
+.subtitle {
+  text-align: center;
+}
+
+.record-card {
+  height: 32px;
+  width: 100%;
+  max-width: 300px;
+  margin: 20px auto;
+  padding: 0 4px;
+  border: 1px solid var(--secondary);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.record-card__label {
+  position: absolute;
+  top: -16px;
+  left: -16px;
+  padding: 0 10px;
+  background-color: var(--primary);
+}

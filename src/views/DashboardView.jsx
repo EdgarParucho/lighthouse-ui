@@ -63,7 +63,7 @@ const DashboardView = () => {
       <Calendar { ...{ habits, setHabits, records, setRecords, querying, setQuerying, showDrawer } } />
     </Section>
     {records.length > 0 &&
-    <Section>
+    <Section modifiers={['mb-60']}>
       <RecordList { ...{ habits, records, setRecords, querying, setQuerying, showDrawer } } />
     </Section>}
     { showingDrawer && <Drawer { ...{

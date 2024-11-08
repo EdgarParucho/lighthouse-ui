@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { DeleteHabit } from '../../services/habitService'
 import { GetRecords } from '../../services/recordService'
-import dateUtils, { isoDate } from '../../utils/dateUtils'
+import dateUtils from '../../utils/dateUtils'
 import CalendarRow from './CalendarRow'
 import Button from '../Layout/Button'
 import './calendar.css'
 
 const Calendar = (props) => {
   const { getAccessTokenSilently } = useAuth0()
-  const { getMonthRange, monthYearFormatter, getCalendarDays } = dateUtils
+  const { getMonthRange, monthYearFormatter, isoDate, getDaysInRange, dayNames } = dateUtils
   const defaultMonth = monthYearFormatter()
   const defaultMonthRange = getMonthRange()
   const defaultOption = { [defaultMonth]: defaultMonthRange }
@@ -19,7 +19,6 @@ const Calendar = (props) => {
   const [monthRecords, setMonthRecords] = useState(props.records)
   const [headers, setHeaders] = useState([])
   const [rows, setRows] = useState([])
-  const [calendarDays, setCalendarDays] = useState(getCalendarDays(defaultMonthRange))
   const [starting, setStarting] = useState(true)
 
   useEffect(() => {
@@ -53,12 +52,12 @@ const Calendar = (props) => {
 
   function scrollToCurrentWeek(monthRangeChanged = false) {
     const tableContainer = document.getElementById('table-container')
-    const [year, month, date] = dateUtils.isoDate.split('-')
+    const [, , date] = isoDate.split('-')
     const isFirstWeek = Number(date) < 7
     if (isFirstWeek || monthRangeChanged) return tableContainer.scrollTo({ left: 0, behavior: 'smooth' })
     const PX_BY_CELL =  31
     const FIRST_CELL_MARGIN =  1
-    const weekDay = new Date(year, Number(month) - 1, date).getDay() + 1
+    const weekDay = new Date().getUTCDay()
     const daysToCurrentWeek = Number(date) - Number(weekDay)
     const pxToScroll = (daysToCurrentWeek * PX_BY_CELL) + FIRST_CELL_MARGIN
     tableContainer.scrollTo({ left: pxToScroll, behavior: 'smooth' })
@@ -73,7 +72,7 @@ const Calendar = (props) => {
   }
 
   function getFormattedOption(date) {
-    const text = dateUtils.monthYearFormatter(date)
+    const text = monthYearFormatter(date)
     const range = getMonthRange(date)
     return { [text]: range }
   }
@@ -85,13 +84,11 @@ const Calendar = (props) => {
   }
 
   function updateHeaders() {
-    const { dayNames, isoDate } = dateUtils
     const [year, month] = monthRange.fromDate.split('-')
-    const calendarDaysUpdated = getCalendarDays(monthRange)
-    setCalendarDays(calendarDaysUpdated)
-    const getDay = (date) => new Date(year, Number(month) - 1, date).getDay()
+    const calendarDays = getDaysInRange(monthRange)
+    const getDay = (date) => new Date(year, Number(month) - 1, date).getUTCDay()
     const getDate = (i) => String(i + 1).padStart(2, 0)
-    const headers = Array.from({ length: calendarDaysUpdated }, (_, i) => Object({
+    const headers = Array.from({ length: calendarDays }, (_, i) => Object({
       date: getDate(i),
       dayName: dayNames[getDay(i + 1)],
       isToday: `${year}-${month}-${getDate(i)}` == isoDate
@@ -115,13 +112,13 @@ const Calendar = (props) => {
   }
 
   function updateDataRows() {
-    const calendarDaysUpdated = getCalendarDays(monthRange)
+    const calendarDays = getDaysInRange(monthRange)
     const [yyyy, mm] = monthRange.fromDate.split('-')
     const rows = props.habits.reduce((rows, habit) => Object({
       ...rows,
       [habit.id]: {
         habitName: habit.name,
-        habitCells: Array.from({ length: calendarDaysUpdated }, (_, i) => {
+        habitCells: Array.from({ length: calendarDays }, (_, i) => {
           const dd = String(i + 1).padStart(2, 0)
           const date = `${yyyy}-${mm}-${dd}`
           const isFutureDate = date > isoDate
