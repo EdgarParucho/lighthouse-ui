@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { Start } from '../services/'
 import { DeleteHabit } from '../services/habitService'
@@ -15,9 +15,10 @@ import EmailForm from '../components/Drawer/EmailForm'
 import HabitForm from '../components/Drawer/HabitForm'
 import RecordForm from '../components/Drawer/RecordForm'
 import DeletionAlert from '../components/Drawer/DeletionAlert'
+import { DeleteAccount } from '../services/accountService'
 
 const DashboardView = () => {
-  const { getAccessTokenSilently } = useAuth0()
+  const { getAccessTokenSilently, logout } = useAuth0()
   const [starting, setStarting] = useState(false)
   const [querying, setQuerying] = useState(false)
   const [errorFetching, setErrorFetching] = useState(false)
@@ -25,6 +26,7 @@ const DashboardView = () => {
   const [records, setRecords] = useState([])
   const [showingDrawer, setShowingDrawer] = useState(false)
   const [drawerChild, setDrawerChild] = useState(null)
+  const drawerModifiers = useRef([])
 
   useEffect(() => { fetchData() }, [])
 
@@ -49,12 +51,16 @@ const DashboardView = () => {
   function hideDrawer() {
     setShowingDrawer(false)
     setDrawerChild(null)
+    drawerModifiers.current = []
   }
 
   function showAccountMenu() {
     drawerChildBuilder({
       Component: AccountMenu,
-      props: { showEmailForm }
+      props: {
+        showEmailForm,
+        showAccountDeletionAlert
+      }
     })
     setShowingDrawer(true)
   }
@@ -71,19 +77,11 @@ const DashboardView = () => {
   function showHabitForm(data = null) {
     drawerChildBuilder({
       Component: HabitForm,
-      props: { data, habits, setHabits, showHabitDeletionAlert: () => showHabitDeletionAlert(data) }
-    })
-    setShowingDrawer(true)
-  }
-
-  function showHabitDeletionAlert(data) {
-    hideDrawer()
-    drawerChildBuilder({
-      Component: DeletionAlert,
       props: {
-        title: 'Delete Habit?',
-        message: 'This action is irreversible. Confirm to delete the habit and its records.',
-        action: () => deleteHabit(data)
+        data,
+        habits,
+        setHabits,
+        showHabitDeletionAlert: () => showHabitDeletionAlert(data)
       }
     })
     setShowingDrawer(true)
@@ -101,6 +99,20 @@ const DashboardView = () => {
         showRecordDeletionAlert: () => showRecordDeletionAlert(data)
       }
     })
+    drawerModifiers.current.push('lg')
+    setShowingDrawer(true)
+  }
+
+  function showHabitDeletionAlert(data) {
+    hideDrawer()
+    drawerChildBuilder({
+      Component: DeletionAlert,
+      props: {
+        title: 'Delete Habit?',
+        message: 'Confirm to permanently delete the habit and associated records.',
+        action: () => deleteHabit(data)
+      }
+    })
     setShowingDrawer(true)
   }
 
@@ -110,8 +122,21 @@ const DashboardView = () => {
       Component: DeletionAlert,
       props: {
         title: 'Delete Record?',
-        message: 'This action is irreversible.',
+        message: 'Confirm to permanently delete the record.',
         action: () => deleteRecord(data)
+      }
+    })
+    setShowingDrawer(true)
+  }
+
+  function showAccountDeletionAlert() {
+    hideDrawer()
+    drawerChildBuilder({
+      Component: DeletionAlert,
+      props: {
+        title: 'Delete Account?',
+        message: 'Confirm to permanently delete the account.',
+        action: () => deleteAccount()
       }
     })
     setShowingDrawer(true)
@@ -140,6 +165,16 @@ const DashboardView = () => {
     hideDrawer()
   }
 
+  async function deleteAccount() {
+    setQuerying(true)
+    const token = await getAccessTokenSilently()
+    const { error, message } = await DeleteAccount({ token })
+    setQuerying(false)
+    alert(message)
+    if (error) return
+    logout({ logoutParams: { returnTo: import.meta.env.VITE_AUTH0_CALLBACK } })
+  }
+
   function removeHabit(id) {
     const newHabits = [...habits]
     const deletedIndex = newHabits.findIndex(habit => habit.id == id)
@@ -166,7 +201,11 @@ const DashboardView = () => {
     <Section modifiers={['mb-60']}>
       <RecordList { ...{ habits, records, setRecords, querying, setQuerying, showRecordForm } } />
     </Section>}
-    { showingDrawer && <Drawer hideDrawer={hideDrawer}>{drawerChild}</Drawer>}
+    { showingDrawer &&
+      <Drawer hideDrawer={hideDrawer} modifiers={drawerModifiers.current}>
+        {drawerChild}
+      </Drawer>
+    }
     { habits.length > 0 &&
     <Button
     type='button'

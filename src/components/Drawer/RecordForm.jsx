@@ -4,6 +4,7 @@ import { CreateRecord, UpdateRecord } from '../../services/recordService'
 import { isoDate } from '../../utils/dateUtils'
 import { validateForm } from '../../utils/formValidator'
 import { recordRulesValidator } from '../../utils/businessValidations'
+import Button from '../Layout/Button'
 
 const RecordForm = (props) => {
   const { getAccessTokenSilently } = useAuth0()
@@ -83,50 +84,69 @@ const RecordForm = (props) => {
 
   return <>
   <h3>Record Form</h3>
-  <form onSubmit={handleSubmit} name='recordForm'>
-    <label>
+  <form className='form' name='recordForm' onSubmit={handleSubmit}>
+    <fieldset className='form__fieldset'>
+      <label className='form__label' htmlFor='record-habit-id'>
+        Habit
+      </label>
       <select
+      id='record-habit-id'
+      className='form__field'
       name="habitID"
       required
       value={formData.habitID}
       onChange={handleChange}
       disabled={props.querying || (editing && lock)}
       >
-        { props.habits.map(habit => <option value={habit.id} key={habit.id}>{habit.name}</option>) }
+        { props.habits.map(({id, name }) => <option value={id} key={id}>{name}</option>) }
       </select>
-    </label>
-    <label>
+      <label className='form__label' htmlFor='record-date'>
+        Date
+      </label>
       <input
+      id='record-date'
+      className='form__field'
       type="date"
       name='date'
+      required
       value={formData.date}
       onChange={handleChange}
       disabled={props.querying || (editing && lock)}
-      required />
+      />
+      <label>
+        <textarea
+        className='form__field form__field_lg'
+        name='note'
+        placeholder='Note (optional)'
+        maxLength={2000}
+        value={formData.note}
+        onChange={handleChange}
+        disabled={props.querying || (editing && lock)}
+        ></textarea>
       </label>
-    <label>
-      <textarea
-      placeholder='Note'
-      maxLength={2000}
-      name='note'
-      value={formData.note}
-      onChange={handleChange}
-      disabled={props.querying || (editing && lock)}
-      ></textarea>
-    </label>
-    <button type="button" disabled={props.querying} onClick={props.hideDrawer}>
-      Back
-    </button>
-    { editing && lock
-    ? <button type="button" disabled={props.querying} onClick={() => setLock(false)}>
-      Edit
-    </button>
-    : <button type="submit" disabled={props.querying || (editing && unaltered)}>
-      Save
-    </button>}
-    {editing && <button type="button" disabled={props.querying} onClick={props.showRecordDeletionAlert}>
-      Delete
-    </button>}
+    </fieldset>
+    <div className="form__actions">
+      <Button type="button" disabled={props.querying} onClick={props.hideDrawer} text='Back' />
+      { editing && lock
+        ? <Button
+        type="button"
+        disabled={props.querying}
+        onClick={() => setLock(false)}
+        text='Edit' />
+        : <Button
+        type="submit"
+        disabled={props.querying || (editing && unaltered)}
+        text='Save'
+        modifiers={['primary']} />
+      }
+      { editing &&
+        <Button
+        type="button"
+        disabled={props.querying}
+        onClick={props.showRecordDeletionAlert}
+        text='Delete' />
+      }
+    </div>
   </form>
   </>
 }

@@ -1,11 +1,7 @@
 .button {
   width: 80px;
   border: none;
-  font-family: "Caveat", serif;
-  font-optical-sizing: auto;
-  font-style: normal;
   font-size: 16px;
-  font-weight: 400;
   color: var(--secondary);
   background-color: var(--light-accent);
   cursor: pointer;
@@ -59,13 +55,17 @@
   margin-top: 4px;
 }
 
+.button_mt-18 {
+  margin-top: 18px;
+}
+
 .button_rounded-sm {
   border-radius: 2px;
 }
 
 .button:hover {
-  color: var(--primary);
   background-color: var(--secondary);
+  color: var(--primary);
 }
 
 .button_primary:hover {

@@ -1,3 +1,72 @@
+.drawer-bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  background-color: var(--secondary);
+  opacity: .5;
+  z-index: 1;
+}
+
 .drawer {
-  margin-bottom: 40px;
+  width: 100%;
+  height: 160px;
+  padding-top: 6px;
+  text-align: center;
+  background-color: var(--primary);
+  position: fixed;
+  bottom: 0;
+  z-index: 10;
+}
+
+.drawer_lg {
+  height: 240px;
+}
+
+.form {
+  height: 100%;
+  width: 500px;
+  margin: 32px auto 0;
+}
+
+.form__fieldset {
+  margin-top: 16px;
+  border: none;
+  position: relative;
+}
+
+.form__label {
+  position: absolute;
+  margin-top: -18px;
+}
+
+.form__field {
+  margin: 4px 16px;
+  width: 140px;
+  height: 24px;
+  padding-left: 2px;
+  border: 1px solid var(--secondary);
+  font-size: 16px;
+}
+
+.form__field_lg {
+  width: 310px;
+  height: 64px;
+}
+
+.form__field:focus {
+  outline: 1px solid var(--secondary);
+}
+
+.form__actions {
+  margin-top: 16px;
+  display: flex;
+  justify-self: center;
+  gap: 32px;
+}
+
+.column-menu {
+  display: grid;
+  justify-content: center;
+  gap: 12px;
 }

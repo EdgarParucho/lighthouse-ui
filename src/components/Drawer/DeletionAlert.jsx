@@ -1,8 +1,10 @@
+import Button from '../Layout/Button'
+
 const DeletionAlert = (props) => <div>
   <h3>{props.title}</h3>
   <p>{props.message}</p>
-  <button type="button" onClick={props.hideDrawer}>Cancel</button>
-  <button type="button" onClick={props.action}>Confirm</button>
+  <Button type="button" modifiers={['mt-18']} onClick={props.hideDrawer} text='Cancel' />
+  <Button type="button" modifiers={['mt-18']} onClick={props.action} text='Confirm' />
 </div>
 
 export default DeletionAlert

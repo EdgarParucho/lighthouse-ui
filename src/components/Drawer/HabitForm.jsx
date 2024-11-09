@@ -4,6 +4,7 @@ import { CreateHabit, UpdateHabit } from '../../services/habitService'
 import { isoDate } from '../../utils/dateUtils'
 import { validateForm } from '../../utils/formValidator'
 import { habitRulesValidator } from '../../utils/businessValidations'
+import Button from '../Layout/Button'
 
 const HabitForm = (props) => {
   const { getAccessTokenSilently } = useAuth0()
@@ -82,41 +83,50 @@ const HabitForm = (props) => {
 
   return <>
   <h3>Habit Form</h3>
-  <form onSubmit={handleSubmit} name='habitForm'>
-    <label>
+  <form onSubmit={handleSubmit} name='habitForm' className='form'>
+    <fieldset className='form__fieldset'>
+      <label className='form__label' htmlFor='habit-name'>
+        Name
+      </label>
       <input
+      id='habit-name'
+      className='form__field'
+      name='name'
       type='text'
       placeholder='Habit name'
+      autoFocus
       maxLength={30}
       required
-      name='name'
       value={formData.name}
       onChange={handleChange}
       disabled={props.querying || (editing && lock)}
       />
-    </label>
-    <label>
+      <label htmlFor='habit-date' className='form__label'>
+        Start date
+      </label>
       <input
+      id='habit-date'
       type="date"
       name='createdAt'
       value={formData.createdAt}
       onChange={handleChange}
       disabled={props.querying || (editing && lock)}
+      className='form__field'
       />
-    </label>
-    <button type="button" disabled={props.querying} onClick={props.hideDrawer}>
-      Cancel
-    </button>
-    { editing && lock
-    ? <button type="button" disabled={props.querying} onClick={() => setLock(false)}>
-      Edit
-    </button>
-    : <button type="submit" disabled={props.querying || (editing && unaltered)}>
-      Save
-    </button>}
-    {editing && <button type="button" disabled={props.querying} onClick={props.showHabitDeletionAlert}>
-      Delete
-    </button>}
+    </fieldset>
+    <div className="form__actions">
+      <Button type="button" disabled={props.querying} onClick={props.hideDrawer} text='Back' />
+      { editing && lock
+      ? <Button type="button" disabled={props.querying} onClick={() => setLock(false)} text='Edit' />
+      : <Button type="submit" disabled={props.querying || (editing && unaltered)} text='Save' modifiers={['primary']} />}
+      { editing &&
+        <Button
+        type="button"
+        disabled={props.querying}
+        onClick={props.showHabitDeletionAlert}
+        text='Delete' />
+      }
+    </div>
   </form>
   </>
 }
