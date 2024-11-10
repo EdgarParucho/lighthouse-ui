@@ -1,11 +1,12 @@
-.subtitle {
-  text-align: center;
+.record-list {
+  width: 90%;
+  max-width: 400px;
+  margin: 40px auto 0;
 }
 
 .record-card {
   height: 32px;
-  width: 100%;
-  max-width: 300px;
+  width: 300px;
   margin: 20px auto;
   padding: 0 4px;
   border: 1px solid var(--secondary);
@@ -21,4 +22,10 @@
   left: -16px;
   padding: 0 10px;
   background-color: var(--primary);
+}
+
+@media screen and (min-width: 1000px) {
+  .record-list {
+    margin-top: 0;
+  }
 }

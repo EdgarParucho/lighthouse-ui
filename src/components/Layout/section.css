@@ -5,3 +5,11 @@
 .section_mb-60 {
   margin-bottom: 60px;
 }
+
+@media screen and (min-width: 1000px) {
+  .section_flex {
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+  }
+}

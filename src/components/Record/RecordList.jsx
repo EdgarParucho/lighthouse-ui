@@ -13,7 +13,7 @@ const RecordList = (props) => {
     setHabitNames(newHabitNames)
   }, [props.habits])
   
-  return <>
+  return <div className='record-list'>
     <h2 className='subtitle'>Last Records</h2>
     { props.records.map(record => <div className='record-card' key={record.id}>
       <span className='record-card__label'>
@@ -28,7 +28,7 @@ const RecordList = (props) => {
       />
     </div>
     )}
-  </>
+  </div>
 }
 
 export default RecordList

@@ -31,7 +31,8 @@ export const monthYearFormatter = (date) => {
   return `${monthNames[month]}, ${year}`
 }
 
-export function getDaysInRange({ fromDate, toDate }) {
+export function getDaysInRange(range) {
+  const { fromDate, toDate } = range ?? getMonthRange()
   const differenceInMiliseconds = new Date(toDate) - new Date(fromDate)
   return Math.round(differenceInMiliseconds / milisecondsByDay)
 }

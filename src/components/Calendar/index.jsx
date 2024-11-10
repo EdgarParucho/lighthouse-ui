@@ -93,6 +93,7 @@ const Calendar = (props) => {
       isToday: `${year}-${month}-${getDate(i)}` == isoDate
     }))
     setHeaders(headers)
+    props.setCalendarDays(calendarDays)
   }
 
   async function updateMonthRecords() {
