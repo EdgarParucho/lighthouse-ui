@@ -12,22 +12,24 @@ const RecordList = (props) => {
     )
     setHabitNames(newHabitNames)
   }, [props.habits])
-  
+
   return <div className='record-list'>
     <h2 className='subtitle'>Last Records</h2>
-    { props.records.map(record => <div className='record-card' key={record.id}>
-      <span className='record-card__label'>
-        {dateUtils.getRelativeDate(record.date)}
-      </span>
-      <p>{habitNames[record.habitID]}</p>
-      <Button
-      type='button'
-      modifiers={['w-sm', 'rounded-sm']}
-      onClick={() => props.showDrawer({ option: 'recordForm', data: record })}
-      text='Details'
-      />
+    <div className="card-container">
+      { props.selectedMonthRecords.map(record => <div className='record-card' key={record.id}>
+        <span className='record-card__label'>
+          {dateUtils.getRelativeDate(record.date)}
+        </span>
+        <p>{habitNames[record.habitID]}</p>
+        <Button
+        type='button'
+        modifiers={['w-sm', 'rounded-sm']}
+        onClick={() => props.showDrawer({ option: 'recordForm', data: record })}
+        text='Details'
+        />
+      </div>
+      )}
     </div>
-    )}
   </div>
 }
 

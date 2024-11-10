@@ -1,7 +1,7 @@
 const now = new Date()
 const currentYear = now.getFullYear()
 const currentMonth = String(now.getMonth() + 1).padStart(2, '0')
-const currentDate = String(now.getDate()).padStart(2, '0')
+export const currentDate = String(now.getDate()).padStart(2, '0')
 const FIRST_DAY = '01'
 
 export const milisecondsByDay = 86400000
@@ -39,12 +39,13 @@ export function getDaysInRange(range) {
 
 export function getRelativeDate(date) {
   const [yyyy, mm, dd] = date.split('-')
-  if (date == isoDate) return 'today'
+  if (date == isoDate) return 'Today'
   const daysDifference = getDaysInRange({ fromDate: date, toDate: isoDate })
   const weekday = new Date(date).getUTCDay()
   const dayName = dayNames[weekday]
+  if (daysDifference < 2) return 'Yesterday'
   if (daysDifference < 7) return dayName
-  return `${dayName}, ${monthNames[mm]} ${dd}, ${yyyy}`
+  else return `${dayName}, ${monthNames[mm]} ${dd}, ${yyyy}`
 }
 
 const monthNames = {
@@ -74,6 +75,7 @@ export const dayNames = {
 }
 
 export default {
+  currentDate,
   isoDate,
   milisecondsByDay,
   isValidDate,

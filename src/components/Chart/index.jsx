@@ -1,19 +1,18 @@
 import { useEffect, useState } from 'react'
 import { Radar } from 'react-chartjs-2'
 import { Chart, RadialLinearScale } from 'chart.js/auto'
-import dateUtils from '../../utils/dateUtils'
 import './chart.css'
 
 Chart.register(RadialLinearScale)
 
-const AreaChart = ({ habits, records }) => {
+const AreaChart = ({ habits, records, daysElapsed }) => {
   const datasetConfig = {
     label: 'Frequency',
     fill: true,
-    backgroundColor: 'rgba(40, 40, 40, 0.2)',
-    borderColor: 'rgb(40, 40, 40)',
-    pointBackgroundColor: 'rgb(225, 225, 225)',
-    pointBorderColor: 'rgb(40, 40, 40)',
+    backgroundColor: 'rgba(40, 40, 40, .3)',
+    borderColor: '#070707',
+    pointBackgroundColor: '#E0E0E0',
+    pointBorderColor: '#070707',
     pointHoverBackgroundColor: 'rgb(40, 40, 40)',
   }
 
@@ -25,18 +24,22 @@ const AreaChart = ({ habits, records }) => {
   const options = {
     scales: {
       r: {
-        angleLines: { display: false },
         suggestedMin: 0,
-        suggestedMax: 7
+        suggestedMax: 7,
+        pointLabels: { font: { size: 12 } }
+      }
+    },
+    plugins: {
+      legend: {
+        display: false
       }
     }
   }
 
   function getHabitRecordFrequency(habit) {
     const habitRecords = records.filter(r => r.habitID == habit.id).length
-    const [, , date] = dateUtils.isoDate.split('-').map(Number)
     const WEEK_DAYS = 7
-    return Math.round((habitRecords / date) * WEEK_DAYS)
+    return Math.round((habitRecords / daysElapsed) * WEEK_DAYS)
   }
 
   useEffect(() => {
@@ -53,7 +56,7 @@ const AreaChart = ({ habits, records }) => {
   }, [habits, records])
 
   return <div className='chart-container'>
-    <h2 className='subtitle'>Compliance</h2>
+    <h2 className='subtitle'>Weekly Frequency</h2>
     <Radar data={data} options={options} />
   </div>
 }

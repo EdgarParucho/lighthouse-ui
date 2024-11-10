@@ -25,7 +25,8 @@ const DashboardView = () => {
   const [errorFetching, setErrorFetching] = useState(false)
   const [habits, setHabits] = useState([])
   const [records, setRecords] = useState([])
-  const [calendarDays, setCalendarDays] = useState([])
+  const [selectedMonthRecords, setSelectedMonthRecords] = useState([])
+  const [daysElapsed, setDaysElapsed] = useState(1)
   const [showingDrawer, setShowingDrawer] = useState(false)
   const [drawerChild, setDrawerChild] = useState(null)
   const drawerModifiers = useRef([])
@@ -42,6 +43,7 @@ const DashboardView = () => {
     else {
       setHabits(data.habits)
       setRecords(data.records)
+      setSelectedMonthRecords(data.records)
     }
     setStarting(false)
   }
@@ -206,12 +208,15 @@ const DashboardView = () => {
       setQuerying={setQuerying}
       showHabitForm={showHabitForm}
       showRecordForm={showRecordForm}
-      setCalendarDays={setCalendarDays} />
+      setDaysElapsed={setDaysElapsed}
+      selectedMonthRecords={selectedMonthRecords}
+      setSelectedMonthRecords={setSelectedMonthRecords}
+      />
     </Section>
     { records.length > 0 &&
-      <Section modifiers={['mb-60', 'flex']}>
-        <Chart habits={habits} records={records} />
-        <RecordList { ...{ habits, records, setRecords, querying, setQuerying, showRecordForm } } />
+      <Section modifiers={['flex']}>
+        <Chart habits={habits} records={selectedMonthRecords} daysElapsed={daysElapsed} />
+        <RecordList { ...{ habits, selectedMonthRecords, querying, setQuerying, showRecordForm } } />
       </Section>
     }
     { showingDrawer &&

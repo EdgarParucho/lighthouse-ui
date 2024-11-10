@@ -15,7 +15,6 @@ const Calendar = (props) => {
   const [month, setMonth] = useState(defaultMonth)
   const [monthRange, setMonthRange] = useState(defaultMonthRange)
   const [monthOptions, setMonthOptions] = useState(defaultOption)
-  const [monthRecords, setMonthRecords] = useState(props.records)
   const [headers, setHeaders] = useState([])
   const [rows, setRows] = useState([])
   const [starting, setStarting] = useState(true)
@@ -32,13 +31,13 @@ const Calendar = (props) => {
 
   useEffect(() => {
     if (!starting) updateDataRows()
-  }, [monthRecords])
+  }, [props.selectedMonthRecords])
 
   useEffect(() => {
     if (starting) return
     updateHeaders()
     updateMonthRecords()
-    scrollToCurrentWeek(true)
+    scrollCalendar(true)
   }, [monthRange])
 
   useEffect(() => {
@@ -46,10 +45,11 @@ const Calendar = (props) => {
     updateHeaders()
     updateDataRows()
     setStarting(false)
-    scrollToCurrentWeek()
+    scrollCalendar()
   }, [])
 
-  function scrollToCurrentWeek(monthRangeChanged = false) {
+  function scrollCalendar(monthRangeChanged = false) {
+    if (window.screen.width > 1000) return
     const tableContainer = document.getElementById('table-container')
     const [, , date] = isoDate.split('-')
     const isFirstWeek = Number(date) < 7
@@ -83,23 +83,24 @@ const Calendar = (props) => {
   }
 
   function updateHeaders() {
-    const [year, month] = monthRange.fromDate.split('-')
+    const [yyyy, mm] = monthRange.fromDate.split('-')
     const calendarDays = getDaysInRange(monthRange)
-    const getDay = (date) => new Date(year, Number(month) - 1, date).getUTCDay()
+    const getDay = (date) => new Date(yyyy, Number(mm) - 1, date).getUTCDay()
     const getDate = (i) => String(i + 1).padStart(2, 0)
     const headers = Array.from({ length: calendarDays }, (_, i) => Object({
       date: getDate(i),
       dayName: dayNames[getDay(i + 1)],
-      isToday: `${year}-${month}-${getDate(i)}` == isoDate
+      isToday: `${yyyy}-${mm}-${getDate(i)}` == isoDate
     }))
     setHeaders(headers)
-    props.setCalendarDays(calendarDays)
+    const daysElapsed = month == defaultMonth ? Number(dateUtils.currentDate) : calendarDays
+    props.setDaysElapsed(daysElapsed)
   }
 
   async function updateMonthRecords() {
     const { fromDate, toDate } = monthRange
     const recordsFiltered = props.records.filter(r => r.date >= fromDate && r.date < toDate)
-    if (recordsFiltered.length > 0) return setMonthRecords(recordsFiltered)
+    if (recordsFiltered.length > 0) return props.setSelectedMonthRecords(recordsFiltered)
 
     props.setQuerying(true)
     const token = await getAccessTokenSilently()
@@ -107,8 +108,9 @@ const Calendar = (props) => {
     props.setQuerying(false)
 
     if (error) return alert(message)
-    else if (data.length == 0) return setMonthRecords([])
-    else props.setRecords([...props.records, ...data])
+    else if (data.length == 0) return props.setSelectedMonthRecords([])
+    props.setRecords([...props.records, ...data])
+    props.props.setSelectedMonthRecords(data)
   }
 
   function updateDataRows() {
@@ -128,7 +130,7 @@ const Calendar = (props) => {
       }
     }), {})
 
-    monthRecords.forEach(({ date, habitID, ...rest }) => {
+    props.selectedMonthRecords.forEach(({ date, habitID, ...rest }) => {
       const [, , day] = date.split('-').map(Number)
       rows[habitID].habitCells[day - 1].record = { date, habitID, ...rest }
     })
@@ -184,7 +186,8 @@ const Calendar = (props) => {
           ) )}
         </tbody>
       </table>}
-      {props.habits.length == 0 && <p className='text_lg text_centered text_my-20'>
+      { props.habits.length == 0 &&
+      <p className='text_lg text_centered text_my-20'>
         <strong>Let’s start by adding a habit.</strong>
       </p>}
       <Button
@@ -197,7 +200,8 @@ const Calendar = (props) => {
         : ['sticky-left', 'w-full']
       }
       />
-      {props.habits.length > 0 && props.records.length == 0 && <p className='text_lg text_centered text_my-20'>
+      { (props.habits.length > 0 && props.records.length == 0) &&
+      <p className='text_lg text_centered text_my-20'>
         <strong>Add a record using the cell you want to mark or the bottom fixed below.</strong>
       </p>}
     </div>
