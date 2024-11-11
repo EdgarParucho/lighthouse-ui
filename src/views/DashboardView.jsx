@@ -84,6 +84,7 @@ const DashboardView = () => {
       props: {
         data,
         habits,
+        records,
         setHabits,
         showHabitDeletionAlert: () => showHabitDeletionAlert(data)
       }

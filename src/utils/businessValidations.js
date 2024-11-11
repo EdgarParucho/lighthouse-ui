@@ -35,6 +35,17 @@ function recordAfterHabitCreation({ record, habits }) {
   }
 }
 
+function habitAfterRecordDate({ habit, editing, habitID, records }) {
+  if (!editing) return { failed: false, message: null }
+  const dateConflict = records.some(r => r.habitID == habitID && r.date < habit.createdAt)
+  return {
+    failed: dateConflict,
+    message: dateConflict
+      ? 'At least one record is older than the new habit date.'
+      : null
+  }
+}
+
 function untilPresent({ record = null, habit = null }) {
   const inputDate = record ? record.date : habit.createdAt
   const wrongDate = new Date(inputDate) > new Date()
@@ -46,12 +57,12 @@ function untilPresent({ record = null, habit = null }) {
   }
 }
 
-const habitRuleValidations = [uniqueHabitName, untilPresent]
+const habitRuleValidations = [uniqueHabitName, untilPresent, habitAfterRecordDate]
 const recordRuleValidations = [dailyHabitRecord, recordAfterHabitCreation, untilPresent]
 
-function habitRulesValidator({ habit, habits }) {
+function habitRulesValidator({ habit, habits, editing, habitID, records }) {
   for (let validation of habitRuleValidations) {
-    const { failed, message } = validation({ habit, habits })
+    const { failed, message } = validation({ habit, habits, editing, habitID, records })
     if (failed) return errorResponse(message)
   }
   return successResponse()

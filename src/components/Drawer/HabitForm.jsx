@@ -54,7 +54,10 @@ const HabitForm = (props) => {
       habit: formData,
       habits: editing
         ? props.habits.filter(h => h.id != props.data.id)
-        : props.habits
+        : props.habits,
+      editing,
+      records: props.records,
+      habitID: props.data.id
     })
     if (rulesValidation.failed) return alert(rulesValidation.message)
     props.setQuerying(true)
