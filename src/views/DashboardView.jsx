@@ -5,6 +5,7 @@ import { DeleteHabit } from '../services/habitService'
 import { DeleteRecord } from '../services/recordService'
 import Skeleton from '../components/Layout/Skeleton'
 import ErrorFetching from '../components/Layout/ErrorFetching'
+import AlertBox from '../components/Layout/AlertBox'
 import Section from '../components/Layout/Section'
 import Calendar from '../components/Calendar'
 import Chart from '../components/Chart'
@@ -29,7 +30,9 @@ const DashboardView = () => {
   const [daysElapsed, setDaysElapsed] = useState(1)
   const [showingDrawer, setShowingDrawer] = useState(false)
   const [drawerChild, setDrawerChild] = useState(null)
+  const showingAlert = useRef(false)
   const drawerModifiers = useRef([])
+  const alertMessage = useRef(null)
 
   useEffect(() => { fetchData() }, [])
 
@@ -37,7 +40,7 @@ const DashboardView = () => {
     setStarting(true)
     const token = await getAccessTokenSilently()
     const { error, data, message } = await Start(token)
-    alert(message)
+    showAlert(message)
     if (error) setErrorFetching(true)
     else if (errorFetching) setErrorFetching(false)
     else {
@@ -86,6 +89,7 @@ const DashboardView = () => {
         habits,
         records,
         setHabits,
+        showAlert,
         showHabitDeletionAlert: () => showHabitDeletionAlert(data)
       }
     })
@@ -101,6 +105,7 @@ const DashboardView = () => {
         records,
         setHabits,
         setRecords,
+        showAlert,
         showRecordDeletionAlert: () => showRecordDeletionAlert(data)
       }
     })
@@ -147,37 +152,13 @@ const DashboardView = () => {
     setShowingDrawer(true)
   }
 
-  async function deleteHabit({ id }) {
-    setQuerying(true)
-    const token = await getAccessTokenSilently()
-    const { error, message } = await DeleteHabit({ token, habitID: id })
-    setQuerying(false)
-    alert(message)
-    if (error) return
-    removeHabit(id)
-    hideDrawer()
-  }
-
-  async function deleteRecord({ id }) {
-    setQuerying(true)
-    const token = await getAccessTokenSilently()
-    const { error, message } = await DeleteRecord({ token, recordID: id })
-    setQuerying(false)
-    alert(message)
-    if (error) return
-    const newRecords = records.filter(record => record.id != id)
-    setRecords(newRecords)
-    hideDrawer()
-  }
-
-  async function deleteAccount() {
-    setQuerying(true)
-    const token = await getAccessTokenSilently()
-    const { error, message } = await DeleteAccount({ token })
-    setQuerying(false)
-    alert(message)
-    if (error) return
-    logout({ logoutParams: { returnTo: import.meta.env.VITE_AUTH0_CALLBACK } })
+  function showAlert(message) {
+    alertMessage.current = message
+    showingAlert.current = true
+    setTimeout(() => {
+      showingAlert.current = false
+      alertMessage.current = ''
+    }, 4600)
   }
 
   function removeHabit(id) {
@@ -189,9 +170,43 @@ const DashboardView = () => {
     setRecords(newRecords)
   }
 
+  async function deleteHabit({ id }) {
+    setQuerying(true)
+    const token = await getAccessTokenSilently()
+    const { error, message } = await DeleteHabit({ token, habitID: id })
+    setQuerying(false)
+    showAlert(message)
+    if (error) return
+    removeHabit(id)
+    hideDrawer()
+  }
+
+  async function deleteRecord({ id }) {
+    setQuerying(true)
+    const token = await getAccessTokenSilently()
+    const { error, message } = await DeleteRecord({ token, recordID: id })
+    setQuerying(false)
+    showAlert(message)
+    if (error) return
+    const newRecords = records.filter(record => record.id != id)
+    setRecords(newRecords)
+    hideDrawer()
+  }
+
+  async function deleteAccount() {
+    setQuerying(true)
+    const token = await getAccessTokenSilently()
+    const { error, message } = await DeleteAccount({ token })
+    setQuerying(false)
+    showAlert(message)
+    if (error) return
+    logout({ logoutParams: { returnTo: import.meta.env.VITE_AUTH0_CALLBACK } })
+  }
+
   if (starting) return <Skeleton />
   errorFetching && <ErrorFetching fetchData={fetchData} />
   return <>
+    { showingAlert.current && <AlertBox message={alertMessage.current} /> }
     <Button
     type='button'
     disabled={querying}
@@ -216,8 +231,18 @@ const DashboardView = () => {
     </Section>
     { records.length > 0 &&
       <Section modifiers={['flex']}>
-        <Chart habits={habits} records={selectedMonthRecords} daysElapsed={daysElapsed} />
-        <RecordList { ...{ habits, selectedMonthRecords, querying, setQuerying, showRecordForm } } />
+        <Chart
+        habits={habits}
+        records={selectedMonthRecords}
+        daysElapsed={daysElapsed}
+        />
+        <RecordList
+        habits={habits}
+        selectedMonthRecords={selectedMonthRecords}
+        querying={querying}
+        setQuerying={setQuerying}
+        showRecordForm={showRecordForm}
+        />
       </Section>
     }
     { showingDrawer &&

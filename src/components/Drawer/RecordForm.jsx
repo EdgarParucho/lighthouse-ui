@@ -55,7 +55,7 @@ const RecordForm = (props) => {
     e.preventDefault()
     const formName = e.target.getAttribute('name')
     const formValidationFails = validateForm({ formName, formData, editing })
-    if (formValidationFails) return alert('Please verify the form.')
+    if (formValidationFails) return props.showAlert('Please verify the form.')
     const rulesValidation = recordRulesValidator({
       record: formData,
       records: editing
@@ -63,14 +63,14 @@ const RecordForm = (props) => {
         : props.records,
       habits: props.habits
     })
-    if (rulesValidation.failed) return alert(rulesValidation.message)
+    if (rulesValidation.failed) return props.showAlert(rulesValidation.message)
     props.setQuerying(true)
     const token = await getAccessTokenSilently()
     const values = editing ? getFormChanges() : { ...formData }
     const { error, data, message } = (editing)
       ? await UpdateRecord({ token, recordID: props.data.id, values })
       : await CreateRecord({ token, values })
-    alert(message)
+    props.showAlert(message)
     props.setQuerying(false)
     if (error) return
     const newRecords = [...props.records]
@@ -127,13 +127,15 @@ const RecordForm = (props) => {
     </fieldset>
     <div className="form__actions">
       <Button type="button" disabled={props.querying} onClick={props.hideDrawer} text='Back' />
-      { editing && lock
-        ? <Button
+      { (editing && lock) &&
+        <Button
         type="button"
         disabled={props.querying}
         onClick={() => setLock(false)}
         text='Edit' />
-        : <Button
+      }
+      { (!editing || !lock) &&
+        <Button
         type="submit"
         disabled={props.querying || (editing && unaltered)}
         text='Save'
