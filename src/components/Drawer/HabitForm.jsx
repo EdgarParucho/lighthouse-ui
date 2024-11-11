@@ -11,6 +11,7 @@ const HabitForm = (props) => {
   const [formData, setFormData] = useState({ name: '', createdAt: isoDate })
   const [editing, setEditing] = useState(false)
   const [lock, setLock] = useState(true)
+  const [querying, setQuerying] = useState(false)
   const [unaltered, setUnaltered] = useState(true)
 
   useEffect(() => {
@@ -57,16 +58,16 @@ const HabitForm = (props) => {
         : props.habits,
       editing,
       records: props.records,
-      habitID: props.data.id
+      habitID: editing ? props.data.id : null
     })
     if (rulesValidation.failed) return props.showAlert(rulesValidation.message)
-    props.setQuerying(true)
+    setQuerying(true)
     const token = await getAccessTokenSilently()
     const values = editing ? getFormChanges() : { ...formData }
     const { error, data, message } = (editing)
       ? await UpdateHabit({ token, habitID: props.data.id, values })
       : await CreateHabit({ token, values })
-    props.setQuerying(false)
+    setQuerying(false)
     props.showAlert(message)
     if (error) return
     updateHabits(data)
@@ -102,7 +103,7 @@ const HabitForm = (props) => {
       required
       value={formData.name}
       onChange={handleChange}
-      disabled={props.querying || (editing && lock)}
+      disabled={querying || (editing && lock)}
       />
       <label htmlFor='habit-date' className='form__label'>
         Start date
@@ -113,22 +114,22 @@ const HabitForm = (props) => {
       name='createdAt'
       value={formData.createdAt}
       onChange={handleChange}
-      disabled={props.querying || (editing && lock)}
+      disabled={querying || (editing && lock)}
       className='form__field'
       />
     </fieldset>
     <div className="form__actions">
-      <Button type="button" disabled={props.querying} onClick={props.hideDrawer} text='Back' />
+      <Button type="button" disabled={querying} onClick={props.hideDrawer} text='Back' />
       { (editing && lock) &&
-        <Button type="button" disabled={props.querying} onClick={() => setLock(false)} text='Edit' />
+        <Button type="button" disabled={querying} onClick={() => setLock(false)} text='Edit' />
       }
       { (!editing || !lock) &&
-        <Button type="submit" disabled={props.querying || (editing && unaltered)} text='Save' modifiers={['primary']} />
+        <Button type="submit" disabled={querying || (editing && unaltered)} text='Save' modifiers={['primary']} />
       }
       { editing &&
         <Button
         type="button"
-        disabled={props.querying}
+        disabled={querying}
         onClick={props.showHabitDeletionAlert}
         text='Delete' />
       }

@@ -110,7 +110,7 @@ const Calendar = (props) => {
     if (error) return alert(message)
     else if (data.length == 0) return props.setSelectedMonthRecords([])
     props.setRecords([...props.records, ...data])
-    props.props.setSelectedMonthRecords(data)
+    props.setSelectedMonthRecords(data)
   }
 
   function updateDataRows() {
@@ -145,6 +145,7 @@ const Calendar = (props) => {
       className='month-selector'
       value={month}
       onChange={onRangeOptionChange}
+      disabled={props.querying}
       >
         { Object.keys(monthOptions).map((option) => (
           <option value={option} key={option}>
@@ -181,6 +182,7 @@ const Calendar = (props) => {
             habitCells={habitCells}
             showHabitForm={props.showHabitForm}
             showRecordForm={props.showRecordForm}
+            querying={props.querying}
             key={habitID}
             />
           ) )}
@@ -194,7 +196,7 @@ const Calendar = (props) => {
       type='button'
       disabled={props.querying}
       onClick={() => props.showHabitForm()}
-      text={props.querying ? 'Loading' : 'Add Habit'}
+      text='Add Habit'
       modifiers={props.habits.length == 0
         ? ['primary', 'w-lg', 'mx-auto', 'pulse']
         : ['sticky-left', 'w-full']

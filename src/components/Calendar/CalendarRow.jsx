@@ -1,6 +1,14 @@
 import Button from '../Layout/Button'
 
-const CalendarRow = ({ habitID, habitName, habitCells, habits, showHabitForm, showRecordForm }) => {
+const CalendarRow = ({
+  habitID,
+  habitName,
+  habitCells,
+  habits,
+  showHabitForm,
+  showRecordForm,
+  querying
+}) => {
 
   const getRecordTemplate = (date) => Object({
     habitID,
@@ -23,6 +31,7 @@ const CalendarRow = ({ habitID, habitName, habitCells, habits, showHabitForm, sh
       onClick={openHabitForm}
       text={habitName}
       modifiers={['w-full', 'h-full']}
+      disabled={querying}
       />
     </td>
     { habitCells.map((cell, i) => (
@@ -30,7 +39,7 @@ const CalendarRow = ({ habitID, habitName, habitCells, habits, showHabitForm, sh
         <Button
         type='button'
         onClick={() => openRecordForm(cell)}
-        disabled={cell.isFutureDate || cell.isBeforeHabitCreation}
+        disabled={cell.isFutureDate || cell.isBeforeHabitCreation || querying}
         text={cell.record ? 'X' : ''}
         modifiers={['w-full', 'h-full', cell.record ? '' : 'mt-4']}
         />

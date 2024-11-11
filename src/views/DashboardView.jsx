@@ -30,8 +30,8 @@ const DashboardView = () => {
   const [daysElapsed, setDaysElapsed] = useState(1)
   const [showingDrawer, setShowingDrawer] = useState(false)
   const [drawerChild, setDrawerChild] = useState(null)
-  const showingAlert = useRef(false)
-  const drawerModifiers = useRef([])
+  const [showingAlert, setShowingALert] = useState(false)
+  const [drawerModifiers, setDrawerModifiers] = useState([])
   const alertMessage = useRef(null)
 
   useEffect(() => { fetchData() }, [])
@@ -52,13 +52,16 @@ const DashboardView = () => {
   }
 
   function drawerChildBuilder({ Component, props }) {
-    setDrawerChild(<Component { ...{ ...props, hideDrawer, querying, setQuerying }} />)
+    setDrawerChild(<Component { ...{ ...props, hideDrawer }} />)
   }
 
   function hideDrawer() {
-    setShowingDrawer(false)
-    setDrawerChild(null)
-    drawerModifiers.current = []
+    setDrawerModifiers([...drawerModifiers, 'hidden'])
+    setTimeout(() => {
+      setShowingDrawer(false)
+      setDrawerChild(null)
+      setDrawerModifiers([])
+    }, 100)
   }
 
   function showAccountMenu() {
@@ -89,7 +92,7 @@ const DashboardView = () => {
         habits,
         records,
         setHabits,
-        showAlert,
+        showAlert: (message) => showAlert(message),
         showHabitDeletionAlert: () => showHabitDeletionAlert(data)
       }
     })
@@ -109,7 +112,7 @@ const DashboardView = () => {
         showRecordDeletionAlert: () => showRecordDeletionAlert(data)
       }
     })
-    drawerModifiers.current.push('lg')
+    setDrawerModifiers([...drawerModifiers, 'lg'])
     setShowingDrawer(true)
   }
 
@@ -154,9 +157,9 @@ const DashboardView = () => {
 
   function showAlert(message) {
     alertMessage.current = message
-    showingAlert.current = true
+    setShowingALert(true)
     setTimeout(() => {
-      showingAlert.current = false
+      setShowingALert(false)
       alertMessage.current = ''
     }, 4600)
   }
@@ -206,7 +209,6 @@ const DashboardView = () => {
   if (starting) return <Skeleton />
   errorFetching && <ErrorFetching fetchData={fetchData} />
   return <>
-    { showingAlert.current && <AlertBox message={alertMessage.current} /> }
     <Button
     type='button'
     disabled={querying}
@@ -246,7 +248,7 @@ const DashboardView = () => {
       </Section>
     }
     { showingDrawer &&
-      <Drawer hideDrawer={hideDrawer} modifiers={drawerModifiers.current}>
+      <Drawer hideDrawer={hideDrawer} modifiers={drawerModifiers}>
         {drawerChild}
       </Drawer>
     }
@@ -258,6 +260,7 @@ const DashboardView = () => {
     text='Add Record'
     modifiers={['primary', 'fixed', 'bottom-0', 'w-full', 'h-lg']}
     />}
+    { showingAlert && <AlertBox message={alertMessage.current} /> }
   </>
 }
 
