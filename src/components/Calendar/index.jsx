@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { GetRecords } from '../../services/recordService'
 import dateUtils from '../../utils/dateUtils'
@@ -18,6 +18,7 @@ const Calendar = (props) => {
   const [headers, setHeaders] = useState([])
   const [rows, setRows] = useState([])
   const [starting, setStarting] = useState(true)
+  const tableContainer = useRef(null)
 
   useEffect(() => {
     if (starting) return
@@ -37,29 +38,29 @@ const Calendar = (props) => {
     if (starting) return
     updateHeaders()
     updateMonthRecords()
-    scrollCalendar(true)
+    scrollCalendar()
   }, [monthRange])
-
+  
   useEffect(() => {
     updateMonthOptions()
     updateHeaders()
     updateDataRows()
     setStarting(false)
-    scrollCalendar()
   }, [])
 
-  function scrollCalendar(monthRangeChanged = false) {
-    if (window.screen.width > 1000) return
-    const tableContainer = document.getElementById('table-container')
+  useEffect(scrollCalendar, [tableContainer.current])
+
+  function scrollCalendar() {
+    if (window.screen.width > 1000 || !tableContainer.current) return
     const [, , date] = isoDate.split('-')
     const isFirstWeek = Number(date) < 7
-    if (isFirstWeek || monthRangeChanged) return tableContainer.scrollTo({ left: 0, behavior: 'smooth' })
-    const PX_BY_CELL =  31
-    const FIRST_CELL_MARGIN =  1
+    if (isFirstWeek || month != defaultMonth) return tableContainer.current.scrollTo({ left: 0, behavior: 'smooth' })
+    const PX_BY_CELL =  26
+    const FIRST_CELL_MARGIN =  2
     const weekDay = new Date().getUTCDay()
     const daysToCurrentWeek = Number(date) - Number(weekDay)
     const pxToScroll = (daysToCurrentWeek * PX_BY_CELL) + FIRST_CELL_MARGIN
-    tableContainer.scrollTo({ left: pxToScroll, behavior: 'smooth' })
+    tableContainer.current.scrollTo({ left: pxToScroll, behavior: 'smooth' })
   }
 
   function updateMonthOptions() {
@@ -155,7 +156,7 @@ const Calendar = (props) => {
       </select>
     </>
     }
-    <div className='table-container' id='table-container'>
+    <div className='table-container' ref={tableContainer}>
       { props.habits.length > 0 &&
         <table className='table'>
           <thead>
