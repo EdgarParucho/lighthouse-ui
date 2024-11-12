@@ -55,12 +55,14 @@ const DashboardView = () => {
     setDrawerChild(<Component { ...{ ...props, hideDrawer }} />)
   }
 
-  function hideDrawer() {
+  function hideDrawer(transitionChild) {
     setDrawerModifiers([...drawerModifiers, 'hidden'])
     setTimeout(() => {
       setShowingDrawer(false)
-      setDrawerChild(null)
       setDrawerModifiers([])
+      if (!transitionChild) return setDrawerChild(null)
+      drawerChildBuilder(transitionChild)
+      setShowingDrawer(true)
     }, 100)
   }
 
@@ -117,8 +119,7 @@ const DashboardView = () => {
   }
 
   function showHabitDeletionAlert(data) {
-    hideDrawer()
-    drawerChildBuilder({
+    hideDrawer({
       Component: DeletionAlert,
       props: {
         title: 'Delete Habit?',
@@ -126,12 +127,10 @@ const DashboardView = () => {
         action: () => deleteHabit(data)
       }
     })
-    setShowingDrawer(true)
   }
 
   function showRecordDeletionAlert(data) {
-    hideDrawer()
-    drawerChildBuilder({
+    hideDrawer({
       Component: DeletionAlert,
       props: {
         title: 'Delete Record?',
@@ -139,12 +138,10 @@ const DashboardView = () => {
         action: () => deleteRecord(data)
       }
     })
-    setShowingDrawer(true)
   }
 
   function showAccountDeletionAlert() {
-    hideDrawer()
-    drawerChildBuilder({
+    hideDrawer({
       Component: DeletionAlert,
       props: {
         title: 'Delete Account?',
@@ -152,7 +149,6 @@ const DashboardView = () => {
         action: () => deleteAccount()
       }
     })
-    setShowingDrawer(true)
   }
 
   function showAlert(message) {
@@ -248,7 +244,7 @@ const DashboardView = () => {
       </Section>
     }
     { showingDrawer &&
-      <Drawer hideDrawer={hideDrawer} modifiers={drawerModifiers}>
+      <Drawer hideDrawer={() => hideDrawer()} modifiers={drawerModifiers}>
         {drawerChild}
       </Drawer>
     }
