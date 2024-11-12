@@ -52,7 +52,7 @@ const DashboardView = () => {
   }
 
   function drawerChildBuilder({ Component, props }) {
-    setDrawerChild(<Component { ...{ ...props, hideDrawer }} />)
+    setDrawerChild(<Component { ...{ ...props, hideDrawer: () => hideDrawer() }} />)
   }
 
   function hideDrawer(transitionChild) {
