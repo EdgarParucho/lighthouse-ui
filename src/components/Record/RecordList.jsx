@@ -24,7 +24,7 @@ const RecordList = (props) => {
         <Button
         type='button'
         modifiers={['w-sm', 'rounded-sm']}
-        onClick={() => props.showDrawer({ option: 'recordForm', data: record })}
+        onClick={() => props.showRecordForm(record)}
         text='Details'
         disabled={props.querying}
         />

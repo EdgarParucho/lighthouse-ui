@@ -156,42 +156,46 @@ const Calendar = (props) => {
     </>
     }
     <div className='table-container' id='table-container'>
-      {props.habits.length > 0 && <table className='table'>
-        <thead>
-          <tr>
-            <th className='table__cell table__cell_sticky table__cell_border-none table__cell_lg'>
-              Habit
-            </th>
-            { headers.map((header) => <th
-            key={header.date}
-            className={`table__cell table__cell_border-none ${header.isToday ? 'table__cell_bt': ''}`}
-            >
-              <span>{header.date}</span>
-              <br />
-              <span>{header.dayName[0]}</span>
-            </th>)
-            }
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map(([habitID, { habitName, habitCells }]) => (
-            <CalendarRow
-            habits={props.habits}
-            habitID={habitID}
-            habitName={habitName}
-            habitCells={habitCells}
-            showHabitForm={props.showHabitForm}
-            showRecordForm={props.showRecordForm}
-            querying={props.querying}
-            key={habitID}
-            />
-          ) )}
-        </tbody>
-      </table>}
+      { props.habits.length > 0 &&
+        <table className='table'>
+          <thead>
+            <tr>
+              <th className='table__cell table__cell_sticky table__cell_border-none table__cell_lg'>
+                Habit
+              </th>
+              { headers.map((header) =>
+                <th
+                key={header.date}
+                className={`table__cell table__cell_border-none ${header.isToday ? 'table__cell_bt': ''}`}
+                >
+                  <span>{header.date}</span>
+                  <br />
+                  <span>{header.dayName[0]}</span>
+                </th>
+              ) }
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(([habitID, { habitName, habitCells }]) => (
+              <CalendarRow
+              habits={props.habits}
+              habitID={habitID}
+              habitName={habitName}
+              habitCells={habitCells}
+              showHabitForm={props.showHabitForm}
+              showRecordForm={props.showRecordForm}
+              querying={props.querying}
+              key={habitID}
+              />
+            ) )}
+          </tbody>
+        </table>
+      }
       { props.habits.length == 0 &&
-      <p className='text_lg text_centered text_my-20'>
-        <strong>Let’s start by adding a habit.</strong>
-      </p>}
+        <p className='text_lg text_centered text_my-20'>
+          <strong>Let’s start by adding a habit.</strong>
+        </p>
+      }
       <Button
       type='button'
       disabled={props.querying}
@@ -202,10 +206,6 @@ const Calendar = (props) => {
         : ['sticky-left', 'w-full']
       }
       />
-      { (props.habits.length > 0 && props.records.length == 0) &&
-      <p className='text_lg text_centered text_my-20'>
-        <strong>Add a record using the cell you want to mark or the bottom fixed below.</strong>
-      </p>}
     </div>
   </>
 }
