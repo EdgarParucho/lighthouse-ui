@@ -14,7 +14,9 @@ const StartView = () => {
       modifiers={['primary', 'mx-auto', 'pulse']}
       text={ isLoading ? 'Loading' : 'Start' }
       />
-      <img src={logo} alt='lighthouse' className='start-view__image' />
+      <figure className='start-view__image-container'>
+        <img src={logo} alt='lighthouse' className='start-view__image' />
+      </figure>
     </div>
   )
 }

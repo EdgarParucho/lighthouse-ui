@@ -1,6 +1,11 @@
 .chart-container {
   width: 90%;
-  max-width: 400px;
-  max-height: 400px;
-  margin: 0 auto;
+  max-width: 370px;
+  margin: 20px auto 40px;
+}
+
+@media screen and (min-width: 768px) {
+  .chart-container {
+    margin-top: 0;
+  }
 }

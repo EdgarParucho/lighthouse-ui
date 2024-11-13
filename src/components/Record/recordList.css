@@ -1,16 +1,16 @@
 .record-list {
   width: 90%;
   max-width: 400px;
-  margin: 40px auto 0;
+  margin: 20px auto 40px;
 }
 
 .card-container {
-  max-height: 400px;
+  max-height: 370px;
   overflow-y: auto;
 }
 
 .record-card {
-  height: 32px;
+  height: 24px;
   width: 300px;
   margin: 20px auto;
   padding: 0 4px;
@@ -29,7 +29,7 @@
   background-color: var(--primary);
 }
 
-@media screen and (min-width: 1000px) {
+@media screen and (min-width: 768px) {
   .record-list {
     margin-top: 0;
   }

@@ -3,13 +3,16 @@
   padding: 0;
   height: 100%;
   display: grid;
-  align-items: center;
+  align-items: end;
   justify-content: center;
 }
 
-.start-view__image {
-  width: 180px;
-  height: 480px;
-  object-fit: cover;
+.start-view__image-container {
+  max-width: 480px;
   align-self: end;
+}
+
+.start-view__image {
+  width: 100%;
+  object-fit: cover;
 }
