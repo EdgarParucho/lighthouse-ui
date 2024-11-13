@@ -259,7 +259,7 @@ const DashboardView = () => {
     disabled={querying}
     onClick={() => showRecordForm()}
     text='Add Record'
-    modifiers={['primary', 'fixed', 'bottom-0', 'w-full', 'h-lg']}
+    modifiers={['primary', 'fixed', 'w-full', 'h-lg']}
     />}
     { showingAlert && <AlertBox message={alertMessage.current} /> }
   </>
