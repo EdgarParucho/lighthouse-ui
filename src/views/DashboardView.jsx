@@ -3,6 +3,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { Start } from '../services/'
 import { DeleteHabit } from '../services/habitService'
 import { DeleteRecord } from '../services/recordService'
+import { DeleteAccount } from '../services/accountService'
 import Skeleton from '../components/Layout/Skeleton'
 import ErrorFetching from '../components/Layout/ErrorFetching'
 import AlertBox from '../components/Layout/AlertBox'
@@ -17,7 +18,7 @@ import EmailForm from '../components/Drawer/EmailForm'
 import HabitForm from '../components/Drawer/HabitForm'
 import RecordForm from '../components/Drawer/RecordForm'
 import DeletionAlert from '../components/Drawer/DeletionAlert'
-import { DeleteAccount } from '../services/accountService'
+
 
 const DashboardView = () => {
   const { getAccessTokenSilently, logout } = useAuth0()
