@@ -3,21 +3,32 @@ import DashboardView from './views/DashboardView'
 import StartView from './views/StartView'
 import './App.css'
 
-const ErrorMessage = () => <p>Sorry, we have an issue with the authentication.</p>
+const AuthErrorMessage = () => <p>There was an issue with the authentication. Please try again.</p>
+
+const Main = ({ authError, loggedIn, loggedOut, onAuthError, onLoggedIn, onLoggedOut }) => {
+  return <main>
+    {authError && onAuthError()}
+    {loggedOut && onLoggedOut()}
+    {loggedIn && onLoggedIn()}
+  </main>
+}
 
 function App() {
   const { isAuthenticated, error } = useAuth0()
 
   return <>
-  <header className='header'>
-    <h1 className="header__title">Lighthouse</h1>
-    <h3 className="header__subtitle">Habit Tracker</h3>
-  </header>
-  <main>
-    { error && <ErrorMessage /> }
-    { isAuthenticated && <DashboardView /> }
-    { !isAuthenticated && <StartView /> }
-  </main>
+    <header className='header'>
+      <h1 className="header__title">Lighthouse</h1>
+      <h3 className="header__subtitle">Habit Tracker</h3>
+    </header>
+    <Main
+    authError={error}
+    loggedIn={isAuthenticated}
+    loggedOut={!isAuthenticated}
+    onAuthError={() => <AuthErrorMessage />}
+    onLoggedIn={() => <DashboardView />}
+    onLoggedOut={() => <StartView />}
+    />
   </>
 }
 
