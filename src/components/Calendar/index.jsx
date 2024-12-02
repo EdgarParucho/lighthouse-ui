@@ -67,7 +67,7 @@ const Calendar = (props) => {
     const userOptions = props.habits.reduce((formattedOptions, { createdAt }) => Object({
       ...formattedOptions,
       ...getFormattedOption(createdAt)
-    }), [])
+    }), { ...defaultOption })
     setMonthOptions(userOptions)
   }
 
