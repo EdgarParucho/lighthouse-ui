@@ -7,8 +7,7 @@ const DeletionAlert = (props) => {
   
   function deleteData() {
     setQuerying(true)
-    props.action()
-    setQuerying(false)
+    props.action().then(() => setQuerying(false))
   }
 
 return <div>
