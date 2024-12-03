@@ -13,9 +13,9 @@ const Drawer = ({ modifiers, hideDrawer, children }) => {
 
   return <>
     <div className='drawer-bg' onClick={hideDrawer} />
-    <div className={className}>
+    <aside className={className}>
       {children}
-    </div>
+    </aside>
   </>
 }
 

@@ -125,7 +125,8 @@ const DashboardView = () => {
       props: {
         title: 'Delete Habit?',
         message: 'Confirm to permanently delete the habit and associated records.',
-        action: () => deleteHabit(data)
+        querying,
+        action: () => deleteHabit(data),
       }
     })
   }
@@ -136,7 +137,8 @@ const DashboardView = () => {
       props: {
         title: 'Delete Record?',
         message: 'Confirm to permanently delete the record.',
-        action: () => deleteRecord(data)
+        querying,
+        action: () => deleteRecord(data),
       }
     })
   }
@@ -147,7 +149,8 @@ const DashboardView = () => {
       props: {
         title: 'Delete Account?',
         message: 'Confirm to permanently delete the account.',
-        action: () => deleteAccount()
+        querying,
+        action: () => deleteAccount(),
       }
     })
   }
@@ -174,6 +177,8 @@ const DashboardView = () => {
     setQuerying(true)
     const token = await getAccessTokenSilently()
     const { error, message } = await DeleteHabit({ token, habitID: id })
+    setShowingALert(false)
+    alertMessage.current = ''
     setQuerying(false)
     showAlert(message)
     if (error) return
