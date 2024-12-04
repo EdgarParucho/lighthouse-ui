@@ -7,8 +7,15 @@
   justify-content: center;
 }
 
+.quote {
+  text-align: center;
+  font-size: 24px;
+  justify-self: center;
+}
+
 .start-view__image-container {
   max-width: 480px;
+  justify-self: center;
   align-self: end;
 }
 
