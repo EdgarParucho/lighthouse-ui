@@ -40,8 +40,8 @@ const CalendarRow = ({
         type='button'
         onClick={() => openRecordForm(cell)}
         disabled={cell.isFutureDate || cell.isBeforeHabitCreation || querying}
-        text={cell.record ? 'X' : ''}
-        modifiers={['w-full', 'h-full', cell.record ? '' : 'mt-4']}
+        text=''
+        modifiers={['w-full', 'h-full', 'mt-4', cell.record ? 'marked' : '']}
         />
     </td>
   ))}

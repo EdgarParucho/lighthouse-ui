@@ -95,6 +95,16 @@
   animation-iteration-count: infinite;
 }
 
+.button_marked {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--secondary), 
+    var(--secondary) 2px,
+    var(--primary) 2px,
+    var(--primary) 4px 
+  );
+}
+
 @keyframes pulse {
   0% {
     background-color: var(--secondary);
