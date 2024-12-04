@@ -1,0 +1,9 @@
+.image-container {
+  max-width: 310px;
+  margin: 0 auto;
+}
+
+.image {
+  width: 100%;
+  object-fit: cover;
+}

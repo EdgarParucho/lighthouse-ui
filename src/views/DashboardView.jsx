@@ -209,7 +209,7 @@ const DashboardView = () => {
   }
 
   if (starting) return <Skeleton />
-  if (errorFetching) return <ErrorFetching fetchData={fetchData} />
+  if (errorFetching) return <ErrorFetching fetchData={fetchData} starting={starting} />
   
   return <>
     <Button
