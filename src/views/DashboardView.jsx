@@ -8,9 +8,9 @@ import Skeleton from '../components/Layout/Skeleton'
 import ErrorFetching from '../components/Layout/ErrorFetching'
 import AlertBox from '../components/Layout/AlertBox'
 import Section from '../components/Layout/Section'
-import Calendar from '../components/Calendar'
+import Table from '../components/Table'
 import Chart from '../components/Chart'
-import RecordList from '../components/Record/RecordList'
+import RecordList from '../components/RecordList'
 import Button from '../components/Layout/Button'
 import Drawer from '../components/Drawer'
 import AccountMenu from '../components/Drawer/AccountMenu'
@@ -220,7 +220,7 @@ const DashboardView = () => {
     modifiers={['absolute', 'top-10', 'right-10']}
     />
     <Section>
-      <Calendar
+      <Table
       habits={habits}
       setHabits={setHabits}
       records={records}

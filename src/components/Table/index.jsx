@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { GetRecords } from '../../services/recordService'
 import dateUtils from '../../utils/dateUtils'
-import CalendarRow from './CalendarRow'
+import TableRow from './TableRow'
 import Button from '../Layout/Button'
-import './calendar.css'
+import './table.css'
 
-const Calendar = (props) => {
+const Table = (props) => {
   const { getAccessTokenSilently } = useAuth0()
   const { getMonthRange, monthYearFormatter, isoDate, getDaysInRange, dayNames } = dateUtils
   const defaultMonth = monthYearFormatter()
@@ -38,7 +38,7 @@ const Calendar = (props) => {
     if (starting) return
     updateHeaders()
     updateMonthRecords()
-    scrollCalendar()
+    scrollTable()
   }, [monthRange])
   
   useEffect(() => {
@@ -48,9 +48,9 @@ const Calendar = (props) => {
     setStarting(false)
   }, [])
 
-  useEffect(scrollCalendar, [tableContainer.current])
+  useEffect(scrollTable, [tableContainer.current])
 
-  function scrollCalendar() {
+  function scrollTable() {
     if (window.screen.width > 1000 || !tableContainer.current) return
     const [, , date] = isoDate.split('-')
     const isFirstWeek = Number(date) < 7
@@ -178,7 +178,7 @@ const Calendar = (props) => {
           </thead>
           <tbody>
             {rows.map(([habitID, { habitName, habitCells }]) => (
-              <CalendarRow
+              <TableRow
               habits={props.habits}
               habitID={habitID}
               habitName={habitName}
@@ -211,4 +211,4 @@ const Calendar = (props) => {
   </>
 }
 
-export default Calendar
+export default Table

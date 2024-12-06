@@ -1,6 +1,6 @@
 import Button from '../Layout/Button'
 
-const CalendarRow = ({
+const TableRow = ({
   habitID,
   habitName,
   habitCells,
@@ -48,4 +48,4 @@ const CalendarRow = ({
   </tr>
 }
 
-export default CalendarRow
+export default TableRow
