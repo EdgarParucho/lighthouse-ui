@@ -8,8 +8,8 @@ import './table.css'
 
 const Table = (props) => {
   const { getAccessTokenSilently } = useAuth0()
-  const { getMonthRange, dateOptionFormatter, isoDate, getDaysInRange, dayNames } = dateUtils
-  const defaultMonth = dateOptionFormatter()
+  const { getMonthRange, getDateOptionString, isoDate, getDaysInRange, dayNames } = dateUtils
+  const defaultMonth = getDateOptionString()
   const defaultMonthRange = getMonthRange()
   const defaultOption = { [defaultMonth]: defaultMonthRange }
   const [month, setMonth] = useState(defaultMonth)
@@ -65,23 +65,21 @@ const Table = (props) => {
 
   function updateMonthOptions() {
     if (props.habits[0] == undefined) return
-    const currentDate = getFormattedOption(isoDate)
-    let option = getFormattedOption(props.habits[0].createdAt)
-    let options = { ...option, ...defaultOption }
+    const currentMonthString = getDateOptionString(isoDate)
+    const currentMonthRange = getMonthRange(isoDate)
+    let optionText = getDateOptionString(props.habits[0].createdAt)
+    let optionRange = getMonthRange(props.habits[0].createdAt)
+    const options = { [optionText]: optionRange }
 
-    while (option.text != currentDate.text) {
-      const followingMonth = option.range.to
-      option = getFormattedOption(followingMonth)
-      options = { ...options, ...option }
+    while (optionText != currentMonthString) {
+      const followingMonth = optionRange.toDate
+      optionText = getDateOptionString(followingMonth)
+      optionRange = getMonthRange(followingMonth)
+      options[optionText] = optionRange
     }
 
+    options[currentMonthString] = currentMonthRange
     setMonthOptions(options)
-  }
-
-  function getFormattedOption(date) {
-    const text = dateOptionFormatter(date)
-    const range = getMonthRange(date)
-    return { [text]: range }
   }
 
   function onRangeOptionChange(e) {
