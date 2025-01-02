@@ -26,7 +26,7 @@ export const isValidDate = (value) => {
   return !isNaN(date.getTime())
 }
 
-export const monthYearFormatter = (date) => {
+export const dateOptionFormatter = (date) => {
   const [year, month] = date ? date.split('-') : [currentYear, currentMonth]
   return `${monthNames[month]}, ${year}`
 }
@@ -80,7 +80,7 @@ export default {
   milisecondsByDay,
   isValidDate,
   dayNames,
-  monthYearFormatter,
+  dateOptionFormatter,
   getMonthRange,
   getDaysInRange,
   getRelativeDate
