@@ -236,7 +236,7 @@ const DashboardView = () => {
     </Section>
     { (habits.length > 0 && records.length == 0) &&
       <p className='text_lg text_centered text_my-20'>
-        <strong>Add a record using the cell you want to mark or the bottom fixed below.</strong>
+        <strong>Add a record using the cell you want to mark or the button fixed below.</strong>
       </p>
     }
     { records.length > 0 &&
