@@ -62,11 +62,11 @@ const HabitForm = (props) => {
     })
     if (rulesValidation.failed) return props.showAlert(rulesValidation.message)
     setQuerying(true)
-    const token = await getAccessTokenSilently()
+    const token = props.demoMode ? null : await getAccessTokenSilently()
     const values = editing ? getFormChanges() : { ...formData }
     const { error, data, message } = (editing)
-      ? await UpdateHabit({ token, habitID: props.data.id, values })
-      : await CreateHabit({ token, values })
+      ? await UpdateHabit({ token, habitID: props.data.id, values }, { demoMode: props.demoMode })
+      : await CreateHabit({ token, values }, { demoMode: props.demoMode })
     setQuerying(false)
     props.showAlert(message)
     if (error) return

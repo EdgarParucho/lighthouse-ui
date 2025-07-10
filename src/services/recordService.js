@@ -1,9 +1,9 @@
 import axios from '../api/axios'
 import { errorMessage } from './index'
 
-export function CreateRecord({ token, values }) {
+export function CreateRecord({ token, values }, { demoMode = false }) {
   const headers = { Authorization: 'Bearer ' + token }
-  return axios.post('/record', values, { headers })
+  return axios.post((demoMode ? '/public/' : '/') + 'record', values, { headers })
     .then(({ data }) => Object({
       error: false,
       message: 'Done: Record created',
@@ -16,9 +16,9 @@ export function CreateRecord({ token, values }) {
     }))
 }
 
-export function UpdateRecord({ token, recordID, values }) {
+export function UpdateRecord({ token, recordID, values }, { demoMode = false }) {
   const headers = { Authorization: 'Bearer ' + token }
-  return axios.patch('/record/' + recordID, values, { headers })
+  return axios.patch((demoMode ? '/public/' : '/') + 'record/' + recordID, values, { headers })
     .then(() => Object({
       error: false,
       message: 'Done: Record updated',
@@ -29,9 +29,9 @@ export function UpdateRecord({ token, recordID, values }) {
     }))
 }
 
-export function DeleteRecord({ token, recordID }) {
+export function DeleteRecord({ token, recordID }, { demoMode = false }) {
   const headers = { Authorization: 'Bearer ' + token }
-  return axios.delete('/record/' + recordID, { headers })
+  return axios.delete((demoMode ? '/public/' : '/') + 'record/' + recordID, { headers })
     .then(() => Object({
         error: false,
         message: 'Done: Record deleted',
@@ -42,9 +42,9 @@ export function DeleteRecord({ token, recordID }) {
       }))
 }
 
-export function GetRecords({ token, from, to }) {
+export function GetRecords({ token, from, to }, { demoMode = false }) {
   const headers = { Authorization: 'Bearer ' + token }
-  return axios.get(`/record/?from=${from}&to=${to}`, { headers })
+  return axios.get((demoMode ? '/public/' : '/') + 'record' + `?from=${from}&to=${to}`, { headers })
     .then(({ data }) => Object({
       error: false,
       message: null,

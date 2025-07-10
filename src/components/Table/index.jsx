@@ -109,8 +109,8 @@ const Table = (props) => {
     if (recordsFiltered.length > 0) return props.setSelectedMonthRecords(recordsFiltered)
 
     props.setQuerying(true)
-    const token = await getAccessTokenSilently()
-    const { error, message, data } = await GetRecords({ token, from: fromDate, to: toDate })
+    const token = props.demoMode ? null : await getAccessTokenSilently()
+    const { error, message, data } = await GetRecords({ token, from: fromDate, to: toDate }, { demoMode: props.demoMode })
     props.setQuerying(false)
 
     if (error) return alert(message)

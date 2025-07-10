@@ -5,8 +5,8 @@ const defaultErrMessage = 'An error ocurred. Please try again later while we sol
 const networkError = (e) => e.message?.toLowerCase().includes('network')
 const errorMessage = (e) => networkError(e) ? networkErrMessage : defaultErrMessage
 
-function Start(token) {
-  return axios.get('/', { headers: { Authorization: 'Bearer ' + token } })
+function Start(token, { demoMode = false }) {
+  return axios.get(demoMode ? '/public/start' : '/start', { headers: { Authorization: 'Bearer ' + token } })
     .then(({ status, data }) => Object({
       error: false,
       message: status == 201 ? 'Your new account is ready' : 'Data loaded',

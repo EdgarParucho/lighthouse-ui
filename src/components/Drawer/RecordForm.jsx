@@ -66,11 +66,11 @@ const RecordForm = (props) => {
     })
     if (rulesValidation.failed) return props.showAlert(rulesValidation.message)
     setQuerying(true)
-    const token = await getAccessTokenSilently()
+    const token = props.demoMode ? null : await getAccessTokenSilently()
     const values = editing ? getFormChanges() : { ...formData }
     const { error, data, message } = (editing)
-      ? await UpdateRecord({ token, recordID: props.data.id, values })
-      : await CreateRecord({ token, values })
+      ? await UpdateRecord({ token, recordID: props.data.id, values }, { demoMode: props.demoMode })
+      : await CreateRecord({ token, values }, { demoMode: props.demoMode })
     props.showAlert(message)
     setQuerying(false)
     if (error) return

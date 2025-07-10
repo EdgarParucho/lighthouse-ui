@@ -1,9 +1,9 @@
 import axios from '../api/axios'
 import { errorMessage } from './index'
 
-export function CreateHabit({ token, values }) {
+export function CreateHabit({ token, values }, { demoMode }) {
   const headers = { Authorization: 'Bearer ' + token }
-  return axios.post('/habit', values, { headers })
+  return axios.post((demoMode ? '/public/' : '/') + 'habit', values, { headers })
     .then(({ data }) => Object({
       error: false,
       message: 'Done: Habit created',
@@ -16,9 +16,9 @@ export function CreateHabit({ token, values }) {
     }))
 }
 
-export function UpdateHabit({ token, habitID, values }) {
+export function UpdateHabit({ token, habitID, values }, { demoMode }) {
   const headers = { Authorization: 'Bearer ' + token }
-  return axios.patch('/habit/' + habitID, values, { headers })
+  return axios.patch((demoMode ? '/public/' : '/') + 'habit/' + habitID, values, { headers })
     .then(() => Object({
       error: false,
       message: 'Done: Habit updated',
@@ -29,9 +29,9 @@ export function UpdateHabit({ token, habitID, values }) {
     }))
 }
 
-export function DeleteHabit({ token, habitID }) {
+export function DeleteHabit({ token, habitID }, { demoMode }) {
   const headers = { Authorization: 'Bearer ' + token }
-  return axios.delete('/habit/' + habitID, { headers })
+  return axios.delete((demoMode ? '/public/' : '/') + 'habit/' + habitID, { headers })
     .then(() => Object({
       error: false,
       message: 'Done: Habit deleted',

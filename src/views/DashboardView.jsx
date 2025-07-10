@@ -20,7 +20,7 @@ import RecordForm from '../components/Drawer/RecordForm'
 import DeletionAlert from '../components/Drawer/DeletionAlert'
 
 
-const DashboardView = () => {
+const DashboardView = ({ demoMode, setDemoMode }) => {
   const { getAccessTokenSilently, logout } = useAuth0()
   const [starting, setStarting] = useState(false)
   const [querying, setQuerying] = useState(false)
@@ -39,8 +39,8 @@ const DashboardView = () => {
 
   async function fetchData() {
     setStarting(true)
-    const token = await getAccessTokenSilently()
-    const { error, data, message } = await Start(token)
+    const token = demoMode ? null : await getAccessTokenSilently()
+    const { error, data, message } = await Start(token, { demoMode })
     showAlert(message)
     if (error) setErrorFetching(true)
     else if (errorFetching) setErrorFetching(false)
@@ -53,7 +53,7 @@ const DashboardView = () => {
   }
 
   function drawerChildBuilder({ Component, props }) {
-    setDrawerChild(<Component { ...{ ...props, hideDrawer: () => hideDrawer() }} />)
+    setDrawerChild(<Component { ...{ ...props, demoMode, hideDrawer: () => hideDrawer() }} />)
   }
 
   function hideDrawer(transitionChild) {
@@ -72,7 +72,9 @@ const DashboardView = () => {
       Component: AccountMenu,
       props: {
         showEmailForm,
-        showAccountDeletionAlert
+        showAccountDeletionAlert,
+        demoMode,
+        setDemoMode
       }
     })
     setShowingDrawer(true)
@@ -175,8 +177,8 @@ const DashboardView = () => {
 
   async function deleteHabit({ id }) {
     setQuerying(true)
-    const token = await getAccessTokenSilently()
-    const { error, message } = await DeleteHabit({ token, habitID: id })
+    const token = demoMode ? null : await getAccessTokenSilently()
+    const { error, message } = await DeleteHabit({ token, habitID: id }, { demoMode })
     setShowingALert(false)
     alertMessage.current = ''
     setQuerying(false)
@@ -188,8 +190,8 @@ const DashboardView = () => {
 
   async function deleteRecord({ id }) {
     setQuerying(true)
-    const token = await getAccessTokenSilently()
-    const { error, message } = await DeleteRecord({ token, recordID: id })
+    const token = demoMode ? null : await getAccessTokenSilently()
+    const { error, message } = await DeleteRecord({ token, recordID: id }, { demoMode })
     setQuerying(false)
     showAlert(message)
     if (error) return
@@ -232,6 +234,7 @@ const DashboardView = () => {
       setDaysElapsed={setDaysElapsed}
       selectedMonthRecords={selectedMonthRecords}
       setSelectedMonthRecords={setSelectedMonthRecords}
+      demoMode={demoMode}
       />
     </Section>
     { (habits.length > 0 && records.length == 0) &&
