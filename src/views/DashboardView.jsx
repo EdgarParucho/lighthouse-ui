@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
-import { Start } from '../services/'
-import { DeleteHabit } from '../services/habitService'
+import { DeleteHabit, GetHabit } from '../services/habitService'
 import { DeleteRecord } from '../services/recordService'
 import { DeleteAccount } from '../services/accountService'
 import Skeleton from '../components/Layout/Skeleton'
@@ -40,7 +39,7 @@ const DashboardView = ({ demoMode, setDemoMode }) => {
   async function fetchData() {
     setStarting(true)
     const token = demoMode ? null : await getAccessTokenSilently()
-    const { error, data, message } = await Start(token, { demoMode })
+    const { error, data, message } = await GetHabit({ token }, { demoMode })
     showAlert(message)
     if (error) setErrorFetching(true)
     else if (errorFetching) setErrorFetching(false)

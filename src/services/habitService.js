@@ -1,6 +1,21 @@
 import axios from '../api/axios'
 import { errorMessage } from './index'
 
+export function GetHabit({ token }, { demoMode }) {
+  const headers = { Authorization: 'Bearer ' + token }
+  return axios.get((demoMode ? '/public/' : '/') + 'habit', { headers })
+    .then(({ data }) => Object({
+      error: false,
+      message: 'Welcome!',
+      data,
+    }))
+    .catch((error) => Object({
+      error: true,
+      message: errorMessage(error),
+      data: null,
+    }))
+}
+
 export function CreateHabit({ token, values }, { demoMode }) {
   const headers = { Authorization: 'Bearer ' + token }
   return axios.post((demoMode ? '/public/' : '/') + 'habit', values, { headers })
