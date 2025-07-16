@@ -39,16 +39,19 @@
   margin-bottom: 40px;
 }
 
-.skeleton_mt-20 {
-  margin-top: 20px;
+.skeleton_mt-10 {
+  margin-top: 10px;
 }
 
 .flex-container {
-  margin-bottom: 20px;
+  margin-bottom: 6px;
   display: flex;
-  align-items: center;
   justify-content: center;
   gap: 4px;
+}
+
+.bottom-container {
+  display: grid;
 }
 
 .skeleton_squared {
@@ -67,4 +70,11 @@
   100% {
     opacity: .1;
   }
+}
+
+@media screen and (min-width: 768px) {
+  .bottom-container {
+    display: flex;
+    justify-content: center;
+  }  
 }
